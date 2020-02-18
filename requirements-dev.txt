@@ -14,6 +14,8 @@ isort==4.3.21             # via pylint
 lazy-object-proxy==1.4.3  # via astroid
 mccabe==0.6.1             # via flake8, pylint
 more-itertools==8.2.0     # via pytest
+mypy-extensions==0.4.3
+mypy==0.761
 packaging==20.1           # via pytest
 pip-tools==4.4.1
 pluggy==0.13.1            # via pytest
@@ -25,5 +27,7 @@ pyparsing==2.4.6          # via packaging
 pytest-cov==2.8.1
 pytest==5.3.5
 six==1.14.0
+typed-ast==1.4.1          # via mypy
+typing-extensions==3.7.4.1  # via mypy
 wcwidth==0.1.8            # via pytest
 wrapt==1.11.2             # via astroid
