@@ -20,5 +20,3 @@ def approx_kernel(kernel: Kernel, x: np.array, y: np.array):
         raise ValueError(f'Unsupported feature type, must be of type: {type(np.array)}')
 
     return kernel(X=x, y=y)
-
-
