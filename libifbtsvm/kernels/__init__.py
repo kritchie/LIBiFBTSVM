@@ -1,7 +1,5 @@
 from enum import Enum
 
-from functools import partial
-
 # For now we use only standard sklearn kernels, custom kernels could
 # live in their own files, e.g. my_custom_kernel.py could define the
 # implementation of a custom kernel and then could be imported with:
