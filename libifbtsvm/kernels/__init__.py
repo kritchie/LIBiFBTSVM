@@ -22,5 +22,5 @@ class Kernel(Enum):
     ACHI2 = AdditiveChi2Sampler(sample_steps=ACHI2_SAMPLE_STEPS, sample_interval=ACHI2_SAMPLE_INTERVAL)
     RBF = RBFSampler(gamma=RBF_GAMMA, random_state=RBF_RANDOM_STATE)
 
-    def __call__(self, *args, **kwargs):
+    def fit_transform(self, *args, **kwargs):
         return self.value.fit_transform(*args, **kwargs)
