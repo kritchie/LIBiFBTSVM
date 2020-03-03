@@ -18,6 +18,24 @@ def invalid_features_a():
 
 
 @pytest.fixture
+def valid_ensemble_a():
+    return np.asarray([
+        [1, 1],
+        [0.5, 1],
+        [1, 0.5]
+    ])
+
+
+@pytest.fixture
+def valid_ensemble_b():
+    return np.asarray([
+        [4, 4],
+        [4.5, 4],
+        [4, 4.5]
+    ])
+
+
+@pytest.fixture
 def sum_kernel():
     Kernel = namedtuple('Kernel', 'fit_transform')
 
