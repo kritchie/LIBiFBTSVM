@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def approx_kernel(kernel, x: np.array, y: np.array):
+def approx_kernel(kernel, x: np.array, y: np.array) -> np.ndarray:
     """
     Returns kernel approximated features.
 
@@ -9,9 +9,9 @@ def approx_kernel(kernel, x: np.array, y: np.array):
                    This is an arbitrary object on which the 'fit_transform' method
                    must be defined.
 
-    :param x: Numpy array of non-approximated features.
-    :param y: Numpy array of non-approximated features.
-    :return: The computer approximate features.
+    :param x: Numpy array of features.
+    :param y: Numpy array of features.
+    :return: The computed approximate features.
     """
     if not kernel:
         raise ValueError('Kernel cannot be null')
