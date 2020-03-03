@@ -19,38 +19,24 @@ class FuzzyMembership(object):
 Radius = Union[np.ndarray, int, float, complex]
 
 
-def _get_max_radius(a: np.ndarray, b: np.ndarray) -> Tuple[Radius, np.ndarray, np.ndarray]:
-    """
-    Radius function
-
-    Based on (de Mello et al. 2019)'s radius computation for fuzzy membership.
-
-    :return: Returns the radius of:
-    -[0] maximum value for entries of class "a"
-    -[1] entries of class "a" related to class "a"
-    -[2] entries of class "b" related to class "a"
-    """
-    _mean_a = np.mean(a, axis=0)
-
-    radius_a = np.max(np.abs(a - _mean_a))
-
-    radius_b = np.sum(np.square(np.tile(_mean_a, (len(b), 1)) - a), axis=1)  # ||xi--Xcen+||^2
-    radius_max_a = np.amax(radius_a)  # max value
-
-    return radius_max_a, radius_a, radius_b
-
-
 def _get_membership(max_radius_a, radis_a, radius_b, len_a, u, epsilon) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Calculates the membership and noise values based on pre-computed radius values
 
+    :return:
+    -[0] membership values for class "a"
+    -[1] noise values for class "a"
+    """
     membership = np.zeros(len_a)
     noise = np.greater_equal(radis_a, radius_b)
 
     _noise_index = np.nonzero(noise)[0]
     _normal_index = np.nonzero(np.invert(noise))[0]
 
-    membership[_normal_index] = (1 - u) * (1 - np.square(np.absolute(radis_a[_normal_index]) / (max_radius_a + epsilon)))
+    membership[_normal_index] = u * (1 - np.square(np.absolute(radis_a[_normal_index]) / (max_radius_a + epsilon)))
     membership[_noise_index] = (1 - u) * (1 - np.square(np.absolute(radis_a[_noise_index]) / (max_radius_a + epsilon)))
     membership = np.expand_dims(membership, axis=1)
+
     return membership, noise
 
 
@@ -78,8 +64,19 @@ def fuzzy_membership(params: Dict, class_p: np.ndarray, class_n: np.ndarray) -> 
     if not u or not (0.0 <= u <= 1.0):
         raise ValueError('Parameter "u" cannot be None and must between 0.0 and 1.0')
 
-    max_radius_p, radius_p_p, radius_p_n = _get_max_radius(class_p, class_n)
-    max_radius_n, radius_n_n, radius_n_p = _get_max_radius(class_n, class_p)
+    _mean_p = np.mean(class_p, axis=0)
+    _mean_n = np.mean(class_n, axis=0)
+
+    _size_p = len(class_p)
+    _size_n = len(class_n)
+
+    radius_p_p = np.sum(np.square(np.tile(_mean_p, (_size_p, 1)) - class_p), axis=1)
+    radius_p_n = np.sum(np.square(np.tile(_mean_n, (_size_p, 1)) - class_p), axis=1)
+    max_radius_p = np.amax(radius_p_p)
+
+    radius_n_n = np.sum(np.square(np.tile(_mean_n, (_size_n, 1)) - class_n), axis=1)
+    radius_n_p = np.sum(np.square(np.tile(_mean_p, (_size_n, 1)) - class_n), axis=1)
+    max_radius_n = np.amax(radius_n_n)
 
     sp, noise_p = _get_membership(max_radius_p, radius_p_p, radius_p_n, len(class_p), u, epsilon)
     sn, noise_n = _get_membership(max_radius_n, radius_n_n, radius_n_p, len(class_n), u, epsilon)
