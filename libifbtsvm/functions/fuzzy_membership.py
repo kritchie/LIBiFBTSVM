@@ -9,7 +9,7 @@ class FuzzyMembership(object):
     A FuzzyMembership object.
     """
 
-    def __init__(self, sp: float, sn: float, noise_p: float, noise_n: float):
+    def __init__(self, sp: np.ndarray, sn: np.ndarray, noise_p: np.ndarray, noise_n: np.ndarray):
         self.sp = sp
         self.sn = sn
         self.noise_p = noise_p
@@ -26,18 +26,32 @@ def _get_max_radius(a: np.ndarray, b: np.ndarray) -> Tuple[Radius, np.ndarray, n
     Based on (de Mello et al. 2019)'s radius computation for fuzzy membership.
 
     :return: Returns the radius of:
-    - entries of "a" related to "a" (radius_a)
-    - entries of "b" related to "a" (radius_b)
-    - maximum value of "a" (radius_a)
+    -[0] maximum value for entries of class "a"
+    -[1] entries of class "a" related to class "a"
+    -[2] entries of class "b" related to class "a"
     """
-    mean_a = np.mean(a, axis=0)
+    _mean_a = np.mean(a, axis=0)
 
-    radius_a = np.max(np.abs(a - mean_a))
+    radius_a = np.max(np.abs(a - _mean_a))
 
-    radius_b = np.sum(np.square(np.tile(mean_a, (len(b), 1)) - a), axis=1)  # ||xi--Xcen+||^2
+    radius_b = np.sum(np.square(np.tile(_mean_a, (len(b), 1)) - a), axis=1)  # ||xi--Xcen+||^2
     radius_max_a = np.amax(radius_a)  # max value
 
     return radius_max_a, radius_a, radius_b
+
+
+def _get_membership(max_radius_a, radis_a, radius_b, len_a, u, epsilon) -> Tuple[np.ndarray, np.ndarray]:
+
+    membership = np.zeros(len_a)
+    noise = np.greater_equal(radis_a, radius_b)
+
+    _noise_index = np.nonzero(noise)[0]
+    _normal_index = np.nonzero(np.invert(noise))[0]
+
+    membership[_normal_index] = (1 - u) * (1 - np.square(np.absolute(radis_a[_normal_index]) / (max_radius_a + epsilon)))
+    membership[_noise_index] = (1 - u) * (1 - np.square(np.absolute(radis_a[_noise_index]) / (max_radius_a + epsilon)))
+    membership = np.expand_dims(membership, axis=1)
+    return membership, noise
 
 
 def fuzzy_membership(params: Dict, class_p: np.ndarray, class_n: np.ndarray) -> FuzzyMembership:
@@ -51,8 +65,8 @@ def fuzzy_membership(params: Dict, class_p: np.ndarray, class_n: np.ndarray) -> 
                    - "epsilon" (float): Must be > 0 to avoid fuzzy membership to be equal to 0.
                    - "u" (float): Must be between 0.0 and 1.0, to balance effect of normal/noisy data points.
 
-    :param class_p: Numpy arrays of features. Holds vectors of the positive class.
-    :param class_n: Numpy arrays of features. Holds vectors of the negative class.
+    :param class_p: Numpy arrays of features. Holds vectors for the positive class.
+    :param class_n: Numpy arrays of features. Holds vectors for the negative class.
     :return: A FuzzyMembership object describing the fuzzy membership for vectors of both classes.
     """
 
@@ -67,14 +81,7 @@ def fuzzy_membership(params: Dict, class_p: np.ndarray, class_n: np.ndarray) -> 
     max_radius_p, radius_p_p, radius_p_n = _get_max_radius(class_p, class_n)
     max_radius_n, radius_n_n, radius_n_p = _get_max_radius(class_n, class_p)
 
-    noise_p = np.where(radius_p_p >= radius_p_n)
-    normal_p = np.where(radius_p_n >= radius_p_p)
+    sp, noise_p = _get_membership(max_radius_p, radius_p_p, radius_p_n, len(class_p), u, epsilon)
+    sn, noise_n = _get_membership(max_radius_n, radius_n_n, radius_n_p, len(class_n), u, epsilon)
 
-    # TODO Add S_p
-
-    noise_n = np.where(radius_n_n >= radius_n_p)
-    normal_n = np.where(radius_n_p >= radius_n_n)
-
-    # TODO Add S_n
-
-    return FuzzyMembership(sp=0.0, sn=0.0, noise_p=0.0, noise_n=0.0)  # FIXME : Implement me !
+    return FuzzyMembership(sp=sp, sn=sn, noise_p=noise_p, noise_n=noise_n)
