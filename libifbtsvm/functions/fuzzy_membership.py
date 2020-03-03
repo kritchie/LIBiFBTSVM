@@ -57,12 +57,12 @@ def fuzzy_membership(params: Dict, class_p: np.ndarray, class_n: np.ndarray) -> 
     """
 
     epsilon = params.get('epsilon')
-    if not epsilon:
-        raise ValueError('Parameter "epsilon" cannot be None and must be a value greater than 0')
+    if not epsilon or not isinstance(epsilon, float) or not epsilon > 0:
+        raise ValueError('Parameter "epsilon" cannot be None and must be a floating value greater than 0')
 
     u = params.get('u')
-    if not u or not (0.0 <= u <= 1.0):
-        raise ValueError('Parameter "u" cannot be None and must between 0.0 and 1.0')
+    if not u or not isinstance(u, float) or not (0.0 <= u <= 1.0):
+        raise ValueError('Parameter "u" cannot be None and must be a floating value between 0.0 and 1.0')
 
     _mean_p = np.mean(class_p, axis=0)
     _mean_n = np.mean(class_n, axis=0)
