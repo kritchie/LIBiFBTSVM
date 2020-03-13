@@ -1,3 +1,6 @@
+
+[![Build Status](https://dev.azure.com/karlritchie1/LIBiFBTSVM/_apis/build/status/kritchie.LIBiFBTSVM?branchName=master)](https://dev.azure.com/karlritchie1/LIBiFBTSVM/_build/latest?definitionId=1&branchName=master)
+
 # LIBiFBTSVM
 
 A Python library for an incremental and decremental fuzzy bounded twin support vector machine.

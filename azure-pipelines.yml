@@ -1,0 +1,52 @@
+
+# specific branch build
+trigger:
+  branches:
+    include:
+    - master
+    - develop
+
+jobs:
+  - job: tests
+    displayName: Tests
+
+    workspace:
+      clean: all
+
+    pool:
+      vmImage: ubuntu-18.04
+
+    strategy:
+      matrix:
+        py36:
+          python.version: '3.6'
+          tox.env: py36
+
+        py37:
+          python.version: '3.7'
+          tox.env: py37
+
+        py38:
+          python.version: '3.8'
+          tox.env: py38
+
+    steps:
+
+      - task: UsePythonVersion@0
+        displayName: Get Python for Python tools.
+        inputs:
+          versionSpec: '$(python.version)'
+          addToPath: false
+        name: Python
+
+      - script: $(Python.pythonLocation)/bin/pip install --upgrade tox
+        displayName: Install Python-based tools.
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(python.version)'
+        displayName: Use Python $(python.version) for tests.
+
+      - script: $(Python.pythonLocation)/bin/tox -e '$(tox.env)'
+        displayName: run tox -e '$(tox.env)'
+
