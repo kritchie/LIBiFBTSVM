@@ -1,6 +1,4 @@
 
-import itertools
-
 from multiprocessing import pool
 from typing import Generator, Tuple
 
@@ -17,6 +15,7 @@ class ifbtsvm(SVC):
     def __init__(self, parameters, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parameters = parameters
+        self.classifiers = {}
 
     def decision_function(self, X):
         pass
@@ -31,18 +30,29 @@ class ifbtsvm(SVC):
         :param sample_weight: (Not supported)
         """
         # Create the DAG Model here
-        # with pool() as _pool:
-        #     _pool.map(_, args)
-        #
-        # for clazz in classes:
-        #
-        #     index_samples = np.where(y == clazz)
-        #     samples = X[index_samples]
+
+        # TODO : Get the DAGs generator
+        # TODO : multiprocessing, call classify for each dag
+        # TODO : Set self.classifiers[p][n] = classifier
 
     def increment(self, X: np.ndarray, y: np.ndarray):
+        """
+
+        :param X:
+        :param y:
+        :return:
+        """
+        # TODO : Implement classifier increment here
         pass
 
     def decrement(self, X: np.ndarray, y: np.ndarray):
+        """
+
+        :param X:
+        :param y:
+        :return:
+        """
+        # TODO : Implement classifier decrement here
         pass
 
     @classmethod
@@ -79,13 +89,40 @@ class ifbtsvm(SVC):
                 yield X[_index_p], y[_index_p], X[_index_n], y[_index_n]
 
     def get_params(self, deep=True):
-        pass
+        """
+        Returns parameters of the classifier.
+
+        :param deep: Not-implemented, as no effect and is kept to comply with sklearn.svm.SVC interface
+        :return: A dictionary of parameters
+        """
+        return self.parameters
 
     def predict(self, X):
+        """
+
+        :param X:
+        :return:
+        """
+        # TODO : implement DAG prediction here
         pass
 
     def score(self, X, y, sample_weight=None):
+        """
+
+        :param X:
+        :param y:
+        :param sample_weight:
+        :return:
+        """
+        # TODO : implement DAG scoring here
         pass
 
     def set_params(self, **params):
-        pass
+        """
+        Sets parameters of the classifier
+
+        :param params: Keyword arguments and their values
+        :return: None
+        """
+        for key, val in params.items():
+            self.parameters[key] = val
