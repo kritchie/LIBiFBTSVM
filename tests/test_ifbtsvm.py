@@ -9,7 +9,7 @@ def test_generate_sub_samples(dataset_3_classes):
 
     model = iFBTSVM(parameters={})
 
-    sub_data_sets = model.generate_sub_sets(X=dataset_3_classes.X, y=dataset_3_classes.y)
+    sub_data_sets = model._generate_sub_sets(X=dataset_3_classes.X, y=dataset_3_classes.y)
 
     dag_1 = next(sub_data_sets)
     truth_1 = [np.array([0.9, 1.0, 1.1]), np.array(['1', '1', '1']),

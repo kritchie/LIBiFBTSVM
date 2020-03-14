@@ -1,5 +1,6 @@
 Click==7.0
 flake8==3.7.9
+joblib==0.14.1
 mypy==0.761
 mypy-extensions==0.4.3
 numpy==1.18.1

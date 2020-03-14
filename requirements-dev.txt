@@ -12,7 +12,7 @@ distlib==0.3.0            # via virtualenv
 entrypoints==0.3          # via flake8
 filelock==3.0.12          # via tox, virtualenv
 flake8==3.7.9
-joblib==0.14.1            # via scikit-learn
+joblib==0.14.1
 mccabe==0.6.1             # via flake8
 more-itertools==8.2.0     # via pytest
 mypy-extensions==0.4.3
