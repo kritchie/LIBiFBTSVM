@@ -1,21 +1,24 @@
 
-from multiprocessing import pool
-from typing import Generator, Tuple
+from multiprocessing import Pool, Queue
+from typing import Dict, Generator, Tuple
 
 import numpy as np
 
 from sklearn.svm import SVC
 
 
-DAGSubProbem = Generator[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray], None, None]
+TrainingSet = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+DAGSubSet = Generator[TrainingSet, None, None]
 
 
 class ifbtsvm(SVC):
 
-    def __init__(self, parameters, *args, **kwargs):
+    # FIXME Define a descriptive class for parameters
+    def __init__(self, parameters, *args, max_parallel_training=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.parameters = parameters
         self.classifiers = {}
+        self.max_parallel_training = max_parallel_training
 
     def decision_function(self, X):
         pass
@@ -30,10 +33,30 @@ class ifbtsvm(SVC):
         :param sample_weight: (Not supported)
         """
         # Create the DAG Model here
+        queue = Queue()
+        with Pool(processes=self.max_parallel_training) as pool:  # FIXME Use an env var for this
+            pool.imap_unordered(func=self._fit_dag_step, iterable=(self.generate_sub_sets(X, y), queue))
 
         # TODO : Get the DAGs generator
         # TODO : multiprocessing, call classify for each dag
         # TODO : Set self.classifiers[p][n] = classifier
+
+    @classmethod
+    def _fit_dag_step(cls, subset: TrainingSet, queue: Queue):
+        """
+        Trains a classifier based on a sub-set of data, as a step in the DAG classifier algorithm.
+
+        :param subset: Sub-set of data containing the training data for this DAG step
+        :param queue: The distributed queue in which to put the result
+        """
+        # TODO : Implement parallel training
+        x_p = subset[0]
+        y_p = subset[1]
+
+        x_n = subset[2]
+        y_n = subset[3]
+
+        queue.put({})
 
     def increment(self, X: np.ndarray, y: np.ndarray):
         """
@@ -56,7 +79,7 @@ class ifbtsvm(SVC):
         pass
 
     @classmethod
-    def generate_sub_sets(cls, X: np.ndarray, y: np.ndarray) -> DAGSubProbem:
+    def generate_sub_sets(cls, X: np.ndarray, y: np.ndarray) -> DAGSubSet:
         """
         Generates sub-data sets based on the DAG classification principle.
 
