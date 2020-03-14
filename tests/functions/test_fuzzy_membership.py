@@ -53,8 +53,8 @@ def test_fuzzy_membership_no_noise(valid_ensemble_a, valid_ensemble_b):
     assert np.isclose(_fuzzy.sp, _truth).all()
     assert np.isclose(_fuzzy.sn, _truth).all()
 
-    assert not np.nonzero(_fuzzy.noise_p)[0]
-    assert not np.nonzero(_fuzzy.noise_n)[0]
+    assert not np.nonzero(_fuzzy.noise_p)[0].size > 0
+    assert not np.nonzero(_fuzzy.noise_n)[0].size > 0
 
 
 def test_fuzzy_membership_noise(valid_ensemble_a, valid_ensemble_b):
@@ -76,5 +76,5 @@ def test_fuzzy_membership_noise(valid_ensemble_a, valid_ensemble_b):
     assert np.isclose(_fuzzy.sp, _truth_p).all()
     assert np.isclose(_fuzzy.sn, _truth_n).all()
 
-    assert not np.nonzero(_fuzzy.noise_p)[0]
+    assert not np.nonzero(_fuzzy.noise_p)[0].size > 0
     assert np.nonzero(_fuzzy.noise_n)[0] == [0]
