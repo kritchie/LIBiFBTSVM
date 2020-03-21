@@ -30,7 +30,7 @@ class iFBTSVM(SVC):
     def __init__(self, parameters: Hyperparameters, *args, n_jobs=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.parameters = parameters
-        self.classifiers = None
+        self._classifiers = {}
         self.n_jobs = n_jobs
 
     def decision_function(self, X):
@@ -50,8 +50,13 @@ class iFBTSVM(SVC):
         #      : instead of copying the data each time. This could save
         #      : a non-negligible amount of memory if the number of classes is high.
         with parallel_backend(backend='loky', n_jobs=self.n_jobs):
-            self.classifiers = Parallel()(delayed(self._fit_dag_step)
-                                          (subset, self.parameters) for subset in self._generate_sub_sets(X, y))
+            trained_hyperplanes = Parallel()(delayed(self._fit_dag_step)
+                                             (subset, self.parameters) for subset in self._generate_sub_sets(X, y))
+
+        for hypp in trained_hyperplanes:
+            _clsf = self._classifiers.get(hypp['classP'], {})
+            _clsf[hypp['classN']] = hypp
+            self._classifiers[hypp['classP']] = _clsf
 
         # TODO Implement building of DAG classifier logic
 
@@ -64,9 +69,11 @@ class iFBTSVM(SVC):
         """
         # Features (x_p) of the current "positive" class
         x_p = subset[0]
+        y_p = subset[1]
 
         # Features (x_n) of the current "negative" class
         x_n = subset[2]
+        y_n = subset[3]
 
         # Calculate fuzzy membership for points
         membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=x_p, class_n=x_n)
@@ -82,19 +89,19 @@ class iFBTSVM(SVC):
         H_p = np.append(x_p, np.ones((x_p.shape[0], 1)), axis=1)
         H_n = np.append(x_n, np.ones((x_n.shape[0], 1)), axis=1)
 
-        # FIXME Review constants terms
         _C1 = parameters.C1 * membership.sn
         _C3 = parameters.C3 * membership.sp
 
         _C2 = parameters.C2
         _C4 = parameters.C4
 
-        # Train the model using the
+        # Train the model using the algorithm described by (de Mello et al. 2019)
         hyperplane_p: Hyperplane = train_model(parameters=parameters, H=H_n, G=H_p, C=_C4, CCx=_C3)
         hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
         hyperplane_n.weights = -hyperplane_n.weights
 
-        return {'hyperplaneP': hyperplane_p, 'hyperplaneN': hyperplane_n, 'fuzzyMembership': membership}
+        return {'hyperplaneP': hyperplane_p, 'hyperplaneN': hyperplane_n, 'fuzzyMembership': membership,
+                'classP': y_p[0], 'classN': y_n[0]}
 
     def increment(self, X: np.ndarray, y: np.ndarray):
         """
