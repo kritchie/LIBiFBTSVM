@@ -1,9 +1,9 @@
 
-from typing import Dict, Generator, Tuple
+from typing import Generator, Tuple
 
 import numpy as np
 
-from joblib import (
+from joblib import (  # type: ignore
     delayed,
     Parallel,
     parallel_backend,
@@ -56,7 +56,7 @@ class iFBTSVM(SVC):
         # TODO Implement building of DAG classifier logic
 
     @classmethod
-    def _fit_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters = None):
+    def _fit_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters):
         """
         Trains a classifier based on a sub-set of data, as a step in the DAG classifier algorithm.
 
