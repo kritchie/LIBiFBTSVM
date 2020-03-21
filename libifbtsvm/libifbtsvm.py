@@ -62,13 +62,11 @@ class iFBTSVM(SVC):
 
         :param subset: Sub-set of data containing the training data for this DAG step
         """
-        # Features (x_p) and labels (y_p) of the current "positive" class
+        # Features (x_p) of the current "positive" class
         x_p = subset[0]
-        y_p = subset[1]
 
-        # Features (x_n) and labels (y_n) of the current "negative" class
+        # Features (x_n) of the current "negative" class
         x_n = subset[2]
-        y_n = subset[3]
 
         # Calculate fuzzy membership for points
         membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=x_p, class_n=x_n)

@@ -17,7 +17,7 @@ from libifbtsvm.functions.fuzzy_membership import (
 ])
 def test_fuzzy_membership_u_error(valid_ensemble_a, valid_ensemble_b, u, epsilon):
     params = Hyperparameters()
-    params.u = u
+    params.fuzzy_parameter = u
     params.epsilon = epsilon
 
     with pytest.raises(ValueError):
@@ -31,7 +31,7 @@ def test_fuzzy_membership_u_error(valid_ensemble_a, valid_ensemble_b, u, epsilon
 ])
 def test_fuzzy_membership_epsilon_error(valid_ensemble_a, valid_ensemble_b, u, epsilon):
     params = Hyperparameters()
-    params.u = u
+    params.fuzzy_parameter = u
     params.epsilon = epsilon
 
     with pytest.raises(ValueError):
@@ -40,12 +40,12 @@ def test_fuzzy_membership_epsilon_error(valid_ensemble_a, valid_ensemble_b, u, e
 
 def test_fuzzy_membership_no_noise(valid_ensemble_a, valid_ensemble_b):
     params = Hyperparameters()
-    params.u = 0.5
+    params.fuzzy_parameter = 0.5
     params.epsilon = 0.5
 
     _fuzzy = fuzzy_membership(params=params, class_p=valid_ensemble_a, class_n=valid_ensemble_b)
 
-    _truth = np.asarray([[0.49621928], [0.47637051], [0.47637051]])
+    _truth = np.asarray([[1.0], [0.5], [0.5]])
 
     assert np.isclose(_fuzzy.sp, _truth).all()
     assert np.isclose(_fuzzy.sn, _truth).all()
@@ -56,7 +56,7 @@ def test_fuzzy_membership_no_noise(valid_ensemble_a, valid_ensemble_b):
 
 def test_fuzzy_membership_noise(valid_ensemble_a, valid_ensemble_b):
     params = Hyperparameters()
-    params.u = 0.5
+    params.fuzzy_parameter = 0.5
     params.epsilon = 0.5
 
     # Update ensemble "b" to have a point closer to center of "a"
@@ -65,8 +65,8 @@ def test_fuzzy_membership_noise(valid_ensemble_a, valid_ensemble_b):
 
     _fuzzy = fuzzy_membership(params=params, class_p=valid_ensemble_a, class_n=valid_ensemble_b)
 
-    _truth_p = np.asarray([[0.49621928], [0.47637051], [0.47637051]])
-    _truth_n = np.asarray([[0.04410816], [0.46875], [0.46875]])
+    _truth_p = np.asarray([[1.0], [0.5], [0.5]])
+    _truth_n = np.asarray([[0.5], [1.0], [1.0]])
 
     assert np.isclose(_fuzzy.sp, _truth_p).all()
     assert np.isclose(_fuzzy.sn, _truth_n).all()
