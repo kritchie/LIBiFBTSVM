@@ -66,11 +66,7 @@ class iFBTSVM(SVC):
         y_n = subset[3]
 
         # Calculate fuzzy membership
-        fuzzy_params = {
-            'epsilon': parameters.epsilon,
-            'u': parameters.u,
-        }
-        membership: FuzzyMembership = fuzzy_membership(params=fuzzy_params, class_p=x_p, class_n=x_n)
+        membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=x_p, class_n=x_n)
 
         # FIXME Get correct notation
         # Build H matrix which is [X_p/n, e] where "e" is a column of ones ("1")
