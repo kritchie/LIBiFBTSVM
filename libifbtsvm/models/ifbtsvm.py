@@ -17,14 +17,21 @@ class FuzzyMembership(object):
 class Hyperparameters(object):
     """
     Object representing the hyperparameters of a model.
+
+    Parameter.C1 = int value (eg. 8) %C1
+    Parameter.C3= int value (eg. 8)  %C3
+    Parameter.C2 = int value (eg. 2) %C2
+    Parameter.C4 = int value (eg. 2)
+
     """
     epsilon: float
-    u: float
-    CC: float
-    CC2: float
-    CR: float
-    CR2: float
+    fuzzy_parameter: float
+    C1: float
+    C2: float
+    C3: float
+    C4: float
     max_evaluations: int
+    phi: float
 
 
 class Hyperplane(object):

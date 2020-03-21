@@ -13,10 +13,13 @@ from sklearn.svm import SVC
 
 from libifbtsvm.functions import (
     fuzzy_membership,
-    FuzzyMembership
+    train_model,
 )
-from libifbtsvm.models.ifbtsvm import Hyperparameters
-
+from libifbtsvm.models.ifbtsvm import (
+    FuzzyMembership,
+    Hyperparameters,
+    Hyperplane,
+)
 
 TrainingSet = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 DAGSubSet = Generator[TrainingSet, None, None]
@@ -59,30 +62,41 @@ class iFBTSVM(SVC):
 
         :param subset: Sub-set of data containing the training data for this DAG step
         """
+        # Features (x_p) and labels (y_p) of the current "positive" class
         x_p = subset[0]
         y_p = subset[1]
 
+        # Features (x_n) and labels (y_n) of the current "negative" class
         x_n = subset[2]
         y_n = subset[3]
 
-        # Calculate fuzzy membership
+        # Calculate fuzzy membership for points
         membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=x_p, class_n=x_n)
 
-        # FIXME Get correct notation
-        # Build H matrix which is [X_p/n, e] where "e" is a column of ones ("1")
-        H_p = np.append(x_p, np.ones(x_p.shape[1], 1), axis=1)
-        H_n = np.append(x_n, np.ones(x_n.shape[1], 1), axis=1)
+        # Build H matrix which is [X_p/n, e] where "e" is an extra column of ones ("1") appended at the end of the
+        # matrix
+        # i.e.
+        #
+        #   if  X_p = | 1  2  3 |  and   e = | 1 |  then  H_p = | 1 2 3 1 |
+        #             | 4  5  6 |            | 1 |              | 4 5 6 1 |
+        #             | 7  8  9 |            | 1 |              | 7 8 9 1 |
+        #
+        H_p = np.append(x_p, np.ones((x_p.shape[0], 1)), axis=1)
+        H_n = np.append(x_n, np.ones((x_n.shape[0], 1)), axis=1)
 
-        # FIXME find explanation in the paper
-        CCp = parameters.get('CC') * membership.sn
-        CCn = parameters.get('CC2') * membership.sp
+        # FIXME Review constants terms
+        _C1 = parameters.C1 * membership.sn
+        _C3 = parameters.C3 * membership.sp
 
-        CRp = parameters.get('CR2')
-        CRn = parameters.get('CR')
+        _C2 = parameters.C2
+        _C4 = parameters.C4
 
+        # Train the model using the
+        hyperplane_p: Hyperplane = train_model(parameters=parameters, H=H_n, G=H_p, C=_C4, CCx=_C3)
+        hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
+        hyperplane_n.weights = -hyperplane_n.weights
 
-
-        return {'class_p': y_p[0], 'class_n': y_n[0], 'classifier': {}}
+        return {'hyperplaneP': hyperplane_p, 'hyperplaneN': hyperplane_n, 'fuzzyMembership': membership}
 
     def increment(self, X: np.ndarray, y: np.ndarray):
         """
