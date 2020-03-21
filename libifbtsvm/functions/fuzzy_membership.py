@@ -1,19 +1,12 @@
 
-from typing import Dict, Tuple, Union
+from typing import Tuple, Union
 
 import numpy as np
 
-
-class FuzzyMembership(object):
-    """
-    A FuzzyMembership object.
-    """
-
-    def __init__(self, sp: np.ndarray, sn: np.ndarray, noise_p: np.ndarray, noise_n: np.ndarray):
-        self.sp = sp
-        self.sn = sn
-        self.noise_p = noise_p
-        self.noise_n = noise_n
+from libifbtsvm.models.ifbtsvm import (
+    FuzzyMembership,
+    Hyperparameters,
+)
 
 
 Radius = Union[np.ndarray, int, float, complex]
@@ -40,7 +33,7 @@ def _get_membership(max_radius_a, radis_a, radius_b, len_a, u, epsilon) -> Tuple
     return membership, noise
 
 
-def fuzzy_membership(params: Dict, class_p: np.ndarray, class_n: np.ndarray) -> FuzzyMembership:
+def fuzzy_membership(params: Hyperparameters, class_p: np.ndarray, class_n: np.ndarray) -> FuzzyMembership:
     """
     This method computes the fuzzy membership of feature vectors for positive and negative class.
 
@@ -56,11 +49,11 @@ def fuzzy_membership(params: Dict, class_p: np.ndarray, class_n: np.ndarray) -> 
     :return: A FuzzyMembership object describing the fuzzy membership for vectors of both classes.
     """
 
-    epsilon = params.get('epsilon')
+    epsilon = params.epsilon
     if not epsilon or not isinstance(epsilon, float) or not epsilon > 0:
         raise ValueError('Parameter "epsilon" cannot be None and must be a floating value greater than 0')
 
-    u = params.get('u')
+    u = params.u
     if not u or not isinstance(u, float) or not (0.0 <= u <= 1.0):
         raise ValueError('Parameter "u" cannot be None and must be a floating value between 0.0 and 1.0')
 

@@ -1,9 +1,12 @@
 import logging
 
-from libifbtsvm.libifbtsvm import ifbtsvm as iFBTSVM
+from libifbtsvm.libifbtsvm import iFBTSVM, Hyperparameters
 
 # TODO Setup logger with appropriate config
 LOGGER = logging.getLogger(__name__)
 
 
-__all__ = ['iFBTSVM']
+__all__ = [
+    'Hyperparameters',
+    'iFBTSVM',
+]

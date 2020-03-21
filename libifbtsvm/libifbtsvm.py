@@ -15,16 +15,16 @@ from libifbtsvm.functions import (
     fuzzy_membership,
     FuzzyMembership
 )
+from libifbtsvm.models.ifbtsvm import Hyperparameters
 
 
 TrainingSet = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 DAGSubSet = Generator[TrainingSet, None, None]
 
 
-class ifbtsvm(SVC):
+class iFBTSVM(SVC):
 
-    # TODO Define a descriptive class for parameters
-    def __init__(self, parameters, *args, n_jobs=1, **kwargs):
+    def __init__(self, parameters: Hyperparameters, *args, n_jobs=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.parameters = parameters
         self.classifiers = None
@@ -44,8 +44,8 @@ class ifbtsvm(SVC):
         """
         # Create the DAG Model here
         # TODO : Possible improvement here would be to use shared memory
-        #      : instead of copying the data each time. This could save a lot
-        #      : of memory if the number of classes is high
+        #      : instead of copying the data each time. This could save
+        #      : a non-negligible amount of memory if the number of classes is high.
         with parallel_backend(backend='loky', n_jobs=self.n_jobs):
             self.classifiers = Parallel()(delayed(self._fit_dag_step)
                                           (subset, self.parameters) for subset in self._generate_sub_sets(X, y))
@@ -53,7 +53,7 @@ class ifbtsvm(SVC):
         # TODO Implement building of DAG classifier logic
 
     @classmethod
-    def _fit_dag_step(cls, subset: TrainingSet, parameters: Dict = None):
+    def _fit_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters = None):
         """
         Trains a classifier based on a sub-set of data, as a step in the DAG classifier algorithm.
 
@@ -66,7 +66,11 @@ class ifbtsvm(SVC):
         y_n = subset[3]
 
         # Calculate fuzzy membership
-        membership = fuzzy_membership(params=parameters, class_p=x_p, class_n=x_n)
+        fuzzy_params = {
+            'epsilon': parameters.epsilon,
+            'u': parameters.u,
+        }
+        membership: FuzzyMembership = fuzzy_membership(params=fuzzy_params, class_p=x_p, class_n=x_n)
 
         # FIXME Get correct notation
         # Build H matrix which is [X_p/n, e] where "e" is a column of ones ("1")
@@ -79,6 +83,8 @@ class ifbtsvm(SVC):
 
         CRp = parameters.get('CR2')
         CRn = parameters.get('CR')
+
+
 
         return {'class_p': y_p[0], 'class_n': y_n[0], 'classifier': {}}
 
