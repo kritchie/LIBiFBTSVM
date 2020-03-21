@@ -1,5 +1,5 @@
 
-from typing import Generator, Tuple
+from typing import Dict, Generator, Tuple
 
 import numpy as np
 
@@ -30,7 +30,7 @@ class iFBTSVM(SVC):
     def __init__(self, parameters: Hyperparameters, *args, n_jobs=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.parameters = parameters
-        self._classifiers = {}
+        self._classifiers: Dict = {}
         self.n_jobs = n_jobs
 
     def decision_function(self, X):
