@@ -3,6 +3,8 @@ from typing import Tuple, Union
 
 import numpy as np
 
+from sklearn import preprocessing
+
 from libifbtsvm.models.ifbtsvm import (
     FuzzyMembership,
     Hyperparameters,
@@ -53,7 +55,7 @@ def fuzzy_membership(params: Hyperparameters, class_p: np.ndarray, class_n: np.n
     if not epsilon or not isinstance(epsilon, float) or not epsilon > 0:
         raise ValueError('Parameter "epsilon" cannot be None and must be a floating value greater than 0')
 
-    u = params.u
+    u = params.fuzzy_parameter
     if not u or not isinstance(u, float) or not (0.0 <= u <= 1.0):
         raise ValueError('Parameter "u" cannot be None and must be a floating value between 0.0 and 1.0')
 
@@ -73,5 +75,9 @@ def fuzzy_membership(params: Hyperparameters, class_p: np.ndarray, class_n: np.n
 
     sp, noise_p = _get_membership(max_radius_p, radius_p_p, radius_p_n, len(class_p), u, epsilon)
     sn, noise_n = _get_membership(max_radius_n, radius_n_n, radius_n_p, len(class_n), u, epsilon)
+
+    scaler = preprocessing.MinMaxScaler(feature_range=(epsilon, 1))
+    sp = scaler.fit_transform(sp)
+    sn = scaler.fit_transform(sn)
 
     return FuzzyMembership(sp=sp, sn=sn, noise_p=noise_p, noise_n=noise_n)

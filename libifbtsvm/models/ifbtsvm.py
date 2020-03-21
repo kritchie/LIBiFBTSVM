@@ -15,6 +15,9 @@ class FuzzyMembership(object):
 
 
 class Hyperparameters(object):
+    """
+    Object representing the hyperparameters of a model.
+    """
     epsilon: float
     u: float
     CC: float
@@ -25,6 +28,9 @@ class Hyperparameters(object):
 
 
 class Hyperplane(object):
+    """
+    Object representing the values for describing a classification hyperplane.
+    """
     alpha: np.ndarray
     weights: np.ndarray
     iterations: int
