@@ -8,7 +8,7 @@ from joblib import (  # type: ignore
     Parallel,
     parallel_backend,
 )
-
+from numpy import linalg
 from sklearn.svm import SVC
 
 from libifbtsvm.functions import (
@@ -34,6 +34,22 @@ class iFBTSVM(SVC):
         self.n_jobs = n_jobs
 
     def decision_function(self, X):
+        """
+        Evalutes the decision function over X.
+
+        :param X: Array of features to evaluate the decision on.
+        :return: Array of decision evaluation.
+        """
+        pass
+
+    def decrement(self, X: np.ndarray, y: np.ndarray):
+        """
+
+        :param X:
+        :param y:
+        :return:
+        """
+        # TODO : Implement classifier decrement here
         pass
 
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
@@ -57,6 +73,7 @@ class iFBTSVM(SVC):
             _clsf = self._classifiers.get(hypp['classP'], {})
             _clsf[hypp['classN']] = hypp
             self._classifiers[hypp['classP']] = _clsf
+
 
         # TODO Implement building of DAG classifier logic
 
@@ -103,26 +120,6 @@ class iFBTSVM(SVC):
         return {'hyperplaneP': hyperplane_p, 'hyperplaneN': hyperplane_n, 'fuzzyMembership': membership,
                 'classP': y_p[0], 'classN': y_n[0]}
 
-    def increment(self, X: np.ndarray, y: np.ndarray):
-        """
-
-        :param X:
-        :param y:
-        :return:
-        """
-        # TODO : Implement classifier increment here
-        pass
-
-    def decrement(self, X: np.ndarray, y: np.ndarray):
-        """
-
-        :param X:
-        :param y:
-        :return:
-        """
-        # TODO : Implement classifier decrement here
-        pass
-
     @classmethod
     def _generate_sub_sets(cls, X: np.ndarray, y: np.ndarray) -> DAGSubSet:
         """
@@ -150,7 +147,6 @@ class iFBTSVM(SVC):
         for _p in range(classes.size):
 
             for _n in range(_p + 1, classes.size):
-
                 _index_p = np.where(y == classes[_p])
                 _index_n = np.where(y == classes[_n])
 
@@ -165,25 +161,36 @@ class iFBTSVM(SVC):
         """
         return self.parameters
 
-    def predict(self, X):
-        """
-
-        :param X:
-        :return:
-        """
-        # TODO : implement DAG prediction here
-        pass
-
-    def score(self, X, y, sample_weight=None):
+    def increment(self, X: np.ndarray, y: np.ndarray):
         """
 
         :param X:
         :param y:
-        :param sample_weight:
         :return:
         """
-        # TODO : implement DAG scoring here
+        # TODO : Implement classifier increment here
         pass
+
+    def predict(self, X):
+        """
+        Performs classification X.
+
+        :param X: Array of features to classify
+        :return: Array of classification result
+        """
+        # FIXME: Implement this
+        # for _p, _inner_dict in self._classifiers.items():
+        #     for _n, hyperplanes, in _inner_dict.items():
+        #
+        #         cls_p = hyperplanes['hyperplaneP']
+        #         cls_n = hyperplanes['hyperplaneN']
+        #
+        # for row in X:
+        #     f_pos = np.divide(np.matmul(row, cls_p.weights[:-1]) + cls_p.weights[-1],
+        #                       linalg.norm(cls_p.weights[:-1]))
+        #     f_neg = np.divide(np.matmul(row, cls_n.weights[:-1]) + cls_n.weights[-1],
+        #                       linalg.norm(cls_n.weights[:-1]))
+        return None
 
     def set_params(self, **params):
         """
@@ -192,5 +199,18 @@ class iFBTSVM(SVC):
         :param params: Keyword arguments and their values
         :return: None
         """
+        # TODO Add unit tests
         for key, val in params.items():
-            self.parameters[key] = val
+            setattr(self.parameters, key, val)
+
+    def score(self, X, y, sample_weight=None):
+        """
+        Returns the accuracy of a classification.
+
+        :param X: Array of features to classify
+        :param y: Array of truth values for the features
+        :param sample_weight: Not supported
+        :return: Accuracy score of the classification
+        """
+        # TODO : implement DAG scoring here
+        pass
