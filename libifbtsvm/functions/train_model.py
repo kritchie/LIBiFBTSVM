@@ -39,7 +39,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
         _proj_grad_max_new = float('-inf')
         _proj_grad_min_new = float('inf')
 
-        np.random.shuffle(x_old)
+        # np.random.shuffle(x_old)
 
         for j in range(len(x_old)):
 
@@ -99,10 +99,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
         _proj_grad_max_old = float('inf') if _proj_grad_max_new <= 0 else _proj_grad_max_new
         _proj_grad_min_old = float('-inf') if _proj_grad_min_new >= 0 else _proj_grad_min_new
 
-    hyperplane = Hyperplane()
-    hyperplane.alpha = alphas_new
-    hyperplane.weights = weights
-    hyperplane.iterations = iterations
-    hyperplane.projected_gradients = _projected_grads
+    hyperplane = Hyperplane(alpha=alphas_new, weights=weights,
+                            iterations=iterations, proj_gradients=_projected_grads)
 
     return hyperplane

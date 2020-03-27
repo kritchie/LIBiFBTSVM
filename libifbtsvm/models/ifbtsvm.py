@@ -3,7 +3,9 @@ from typing import Union
 
 import numpy as np
 
+from sklearn.kernel_approximation import TransformerMixin, BaseEstimator
 
+Kernel = (TransformerMixin, BaseEstimator)
 Label = Union[int, str]
 
 
@@ -27,7 +29,8 @@ class FuzzyMembership(object):
 
 class Hyperparameters(object):
 
-    def __init__(self, epsilon, fuzzy, C1, C2, C3, C4, max_evals, phi):
+    def __init__(self, epsilon=None, fuzzy=None, C1=None, C2=None, C3=None, C4=None,
+                 max_evals=None, phi=None, kernel=None):
         """
         Creates an object representing the hyperparameters of a classification model
 
@@ -49,6 +52,7 @@ class Hyperparameters(object):
         self.C4: float = C4
         self.max_evaluations: int = max_evals
         self.phi: float = phi
+        self.kernel: Kernel = kernel
 
 
 class Hyperplane(object):
@@ -84,7 +88,7 @@ class ClassificationModel(object):
         :param class_n:
         """
         self.fuzzy_membership: FuzzyMembership = fuzzy
-        self.weights_p: Hyperplane = weights_p
-        self.weights_n: Hyperplane = weights_n
+        self.p: Hyperplane = weights_p
+        self.n: Hyperplane = weights_n
         self.class_p: Label = class_p
         self.class_n: Label = class_n
