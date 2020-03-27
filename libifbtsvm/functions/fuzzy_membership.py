@@ -28,8 +28,8 @@ def _get_membership(max_radius_a, radis_a, radius_b, len_a, u, epsilon) -> Tuple
     _noise_index = np.nonzero(noise)[0]
     _normal_index = np.nonzero(np.invert(noise))[0]
 
-    membership[_normal_index] = u * (1 - np.square(np.absolute(radis_a[_normal_index]) / (max_radius_a + epsilon)))
-    membership[_noise_index] = (1 - u) * (1 - np.square(np.absolute(radis_a[_noise_index]) / (max_radius_a + epsilon)))
+    membership[_normal_index] = (1-u) * (1 - np.square(np.absolute(radis_a[_normal_index]) / (max_radius_a + epsilon)))
+    membership[_noise_index] = u * (1 - np.square(np.absolute(radis_a[_noise_index]) / (max_radius_a + epsilon)))
     membership = np.expand_dims(membership, axis=1)
 
     return membership, noise
