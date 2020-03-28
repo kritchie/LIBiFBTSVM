@@ -12,7 +12,7 @@ distlib==0.3.0            # via virtualenv
 entrypoints==0.3          # via flake8
 filelock==3.0.12          # via tox, virtualenv
 flake8==3.7.9
-joblib==0.14.1            # via scikit-learn
+joblib==0.14.1
 mccabe==0.6.1             # via flake8
 more-itertools==8.2.0     # via pytest
 mypy-extensions==0.4.3
@@ -26,6 +26,7 @@ pycodestyle==2.5.0        # via flake8
 pyflakes==2.1.1           # via flake8
 pyparsing==2.4.6          # via packaging
 pytest-cov==2.8.1
+pytest-mock==2.0.0
 pytest==5.3.5
 scikit-learn==0.22.1
 scipy==1.4.1              # via scikit-learn
