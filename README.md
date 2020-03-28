@@ -1,7 +1,7 @@
 
 [![Build Status](https://dev.azure.com/karlritchie1/LIBiFBTSVM/_apis/build/status/kritchie.LIBiFBTSVM?branchName=master)](https://dev.azure.com/karlritchie1/LIBiFBTSVM/_build/latest?definitionId=1&branchName=master)
 
-# LIBiFBTSVM
+# LIBiFBTSVM (currently in development)
 
 A Python library for an incremental and decremental fuzzy bounded twin support vector machine.
 
@@ -24,6 +24,25 @@ python setup.py --install
 ```
 
 ## Usage
+
+### Installation
+
+The library is currently under active development, therefore, to install the development library you can
+run the following command:
+
+```bash
+pip install git+https://github.com/kritchie/LIBiFBTSVM.git@develop
+```
+
+Or, alternatively, you can clone the project and navigate to its root folder, then run the following command:
+
+```bash
+python setup.py install
+```
+
+### Examples
+
+The `examples/` directory contains a few examples on how to use this library to perform classification tasks.
 
 ## Development
 

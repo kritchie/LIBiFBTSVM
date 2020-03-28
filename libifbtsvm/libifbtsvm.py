@@ -6,9 +6,8 @@ import numpy as np
 from joblib import (  # type: ignore
     delayed,
     Parallel,
-    parallel_backend,
 )
-
+from numpy import linalg
 from sklearn.svm import SVC
 
 from libifbtsvm.functions import (
@@ -16,6 +15,7 @@ from libifbtsvm.functions import (
     train_model,
 )
 from libifbtsvm.models.ifbtsvm import (
+    ClassificationModel,
     FuzzyMembership,
     Hyperparameters,
     Hyperplane,
@@ -32,8 +32,25 @@ class iFBTSVM(SVC):
         self.parameters = parameters
         self._classifiers: Dict = {}
         self.n_jobs = n_jobs
+        self.kernel = parameters.kernel
 
     def decision_function(self, X):
+        """
+        Evalutes the decision function over X.
+
+        :param X: Array of features to evaluate the decision on.
+        :return: Array of decision evaluation.
+        """
+        pass
+
+    def decrement(self, X: np.ndarray, y: np.ndarray):
+        """
+
+        :param X:
+        :param y:
+        :return:
+        """
+        # TODO : Implement classifier decrement here
         pass
 
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight=None):
@@ -45,20 +62,18 @@ class iFBTSVM(SVC):
 
         :param sample_weight: (Not supported)
         """
+        X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X  # type: ignore
+
+        # Train the DAG models in parallel
+        trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='threads')(
+            delayed(self._fit_dag_step)(subset, self.parameters) for subset in self._generate_sub_sets(X, y)
+        )
+
         # Create the DAG Model here
-        # TODO : Possible improvement here would be to use shared memory
-        #      : instead of copying the data each time. This could save
-        #      : a non-negligible amount of memory if the number of classes is high.
-        with parallel_backend(backend='loky', n_jobs=self.n_jobs):
-            trained_hyperplanes = Parallel()(delayed(self._fit_dag_step)
-                                             (subset, self.parameters) for subset in self._generate_sub_sets(X, y))
-
         for hypp in trained_hyperplanes:
-            _clsf = self._classifiers.get(hypp['classP'], {})
-            _clsf[hypp['classN']] = hypp
-            self._classifiers[hypp['classP']] = _clsf
-
-        # TODO Implement building of DAG classifier logic
+            _clsf = self._classifiers.get(hypp.class_p, {})
+            _clsf[hypp.class_n] = hypp
+            self._classifiers[hypp.class_p] = _clsf
 
     @classmethod
     def _fit_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters):
@@ -100,28 +115,11 @@ class iFBTSVM(SVC):
         hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
         hyperplane_n.weights = -hyperplane_n.weights
 
-        return {'hyperplaneP': hyperplane_p, 'hyperplaneN': hyperplane_n, 'fuzzyMembership': membership,
-                'classP': y_p[0], 'classN': y_n[0]}
-
-    def increment(self, X: np.ndarray, y: np.ndarray):
-        """
-
-        :param X:
-        :param y:
-        :return:
-        """
-        # TODO : Implement classifier increment here
-        pass
-
-    def decrement(self, X: np.ndarray, y: np.ndarray):
-        """
-
-        :param X:
-        :param y:
-        :return:
-        """
-        # TODO : Implement classifier decrement here
-        pass
+        return ClassificationModel(class_p=y_p[0],
+                                   class_n=y_n[0],
+                                   fuzzy=membership,
+                                   weights_p=hyperplane_p,
+                                   weights_n=hyperplane_n)
 
     @classmethod
     def _generate_sub_sets(cls, X: np.ndarray, y: np.ndarray) -> DAGSubSet:
@@ -150,7 +148,6 @@ class iFBTSVM(SVC):
         for _p in range(classes.size):
 
             for _n in range(_p + 1, classes.size):
-
                 _index_p = np.where(y == classes[_p])
                 _index_n = np.where(y == classes[_n])
 
@@ -165,25 +162,76 @@ class iFBTSVM(SVC):
         """
         return self.parameters
 
-    def predict(self, X):
-        """
-
-        :param X:
-        :return:
-        """
-        # TODO : implement DAG prediction here
-        pass
-
-    def score(self, X, y, sample_weight=None):
+    def increment(self, X: np.ndarray, y: np.ndarray):
         """
 
         :param X:
         :param y:
-        :param sample_weight:
         :return:
         """
-        # TODO : implement DAG scoring here
+        # TODO : Implement classifier increment here
         pass
+
+    def predict(self, X):
+        """
+        Performs classification X.
+
+        :param X: Array of features to classify
+        :return: Array of classification result
+        """
+        X = self.kernel.transform(X=X) if self.kernel else X
+
+        lh_keys = list(set(self._classifiers.keys()))
+
+        rh_keys = set()
+        for value in self._classifiers.values():
+            for key, _ in value.items():
+                rh_keys.add(key)
+        rh_keys = list(rh_keys)
+
+        classes = []
+
+        for row in X:
+
+            _dag_index_lh = 0
+            _dag_index_rh = 0
+
+            f_pos = 0
+            f_neg = 0
+
+            class_1 = None
+            class_2 = None
+
+            while True:
+                try:
+                    class_1 = lh_keys[_dag_index_lh]
+                    class_2 = rh_keys[_dag_index_rh]
+
+                    model: ClassificationModel = self._classifiers[class_1][class_2]
+
+                    f_pos = np.divide(np.matmul(row, model.p.weights[:-1]) + model.p.weights[-1],
+                                      linalg.norm(model.p.weights[:-1]))
+                    f_neg = np.divide(np.matmul(row, model.n.weights[:-1]) + model.n.weights[-1],
+                                      linalg.norm(model.n.weights[:-1]))
+
+                    if abs(f_pos) < abs(f_neg):
+                        _dag_index_lh += 1
+                        _dag_index_rh += 1
+
+                    else:
+                        _dag_index_rh += 1
+
+                except (StopIteration, IndexError):
+
+                    if abs(f_pos) < abs(f_neg):
+                        classes.append(class_2)
+
+                    else:
+                        classes.append(class_1)
+
+                    break
+
+        return classes
 
     def set_params(self, **params):
         """
@@ -193,4 +241,21 @@ class iFBTSVM(SVC):
         :return: None
         """
         for key, val in params.items():
-            self.parameters[key] = val
+            setattr(self.parameters, key, val)
+
+    def score(self, X, y, sample_weight=None):
+        """
+        Returns the accuracy of a classification.
+
+        :param X: Array of features to classify
+        :param y: Array of truth values for the features
+        :param sample_weight: Not supported
+        :return: Accuracy score of the classification
+        """
+        predictions = self.predict(X=X)
+        accuracy = 0
+        for i in range(len(y)):
+            if predictions[i] == y[i]:
+                accuracy += 1
+
+        return accuracy / len(y)
