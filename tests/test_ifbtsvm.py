@@ -2,6 +2,8 @@
 import numpy as np
 import pytest
 
+from sklearn.datasets import load_iris
+
 from libifbtsvm import iFBTSVM
 
 from libifbtsvm.models.ifbtsvm import (
@@ -59,3 +61,27 @@ def test_fit_dag_step(mocker):
     model = iFBTSVM._fit_dag_step(subset, _mock_params)
     assert model.p.weights[0] == -1
     assert model.n.weights[0] == -1
+
+
+def test_predictions():
+    dataset = load_iris()
+    params = Hyperparameters(
+        epsilon=0.0000001,
+        fuzzy=0.01,
+        C1=8,
+        C2=2,
+        C3=8,
+        C4=2,
+        max_evals=500,
+        phi=0.00001,
+        kernel=None,
+    )
+
+    # Initialisation iFBTSVM
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
+
+    # Training
+    ifbtsvm.fit(X=dataset.data, y=dataset.target)
+
+    # Prediction
+    assert pytest.approx(ifbtsvm.score(X=dataset.data, y=dataset.target), rel=1e-3) == 0.973333
