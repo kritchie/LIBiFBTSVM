@@ -50,18 +50,12 @@ def test_fit_dag_step(mocker):
     fuzzy_membership = FuzzyMembership(noise_n=z, noise_p=z, sp=z, sn=z)
     subset = (z, z, z, z)
 
-    _mock_plane = Hyperplane()
-    _mock_plane.weights = np.ones((1, 1))
-
-    _mock_params = Hyperparameters()
-    _mock_params.C1 = 1
-    _mock_params.C2 = 2
-    _mock_params.C3 = 3
-    _mock_params.C4 = 4
+    _mock_plane = Hyperplane(weights=np.ones((1, 1)))
+    _mock_params = Hyperparameters(C1=1, C2=2, C3=3, C4=4)
 
     mocker.patch('libifbtsvm.libifbtsvm.fuzzy_membership', return_value=fuzzy_membership)
     mocker.patch('libifbtsvm.libifbtsvm.train_model', return_value=_mock_plane)
 
     model = iFBTSVM._fit_dag_step(subset, _mock_params)
-    assert model.get('hyperplaneP').weights[0] == -1
-    assert model.get('hyperplaneN').weights[0] == -1
+    assert model.p.weights[0] == -1
+    assert model.n.weights[0] == -1

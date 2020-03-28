@@ -57,7 +57,7 @@ class Hyperparameters(object):
 
 class Hyperplane(object):
 
-    def __init__(self, alpha, weights, iterations, proj_gradients):
+    def __init__(self, alpha=None, weights=None, iterations=None, proj_gradients=None):
         """
         Creates an object representing the values for describing a classification hyperplane.
 

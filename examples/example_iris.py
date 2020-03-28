@@ -29,8 +29,8 @@ if __name__ == '__main__':
     before = time.monotonic()
     ifbtsvm.fit(X=dataset.data, y=dataset.target)
     after = time.monotonic()
-    elapsed = (after-before)
+    elapsed = (after - before)
 
     # Prediction
     accuracy = ifbtsvm.score(X=dataset.data, y=dataset.target)
-    print(f'Accuracy iFBTSVM: {accuracy*100.0}% Train time: {elapsed}s')
+    print(f'Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')

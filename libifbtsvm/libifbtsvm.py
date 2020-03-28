@@ -62,7 +62,7 @@ class iFBTSVM(SVC):
 
         :param sample_weight: (Not supported)
         """
-        X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X
+        X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X  # type: ignore
 
         # Train the DAG models in parallel
         trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='threads')(
