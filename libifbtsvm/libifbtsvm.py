@@ -63,17 +63,14 @@ class iFBTSVM(SVC):
 
         :param sample_weight: (Not supported)
         """
-        # Create the DAG Model here
-        # TODO : Possible improvement here would be to use shared memory
-        #      : instead of copying the data each time. This could save
-        #      : a non-negligible amount of memory if the number of classes is high.
+        X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X
 
-        X = self.kernel.fit_transform(X=X, y=y)
-
+        # Train the DAG models in parallel
         trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='threads')(
             delayed(self._fit_dag_step)(subset, self.parameters) for subset in self._generate_sub_sets(X, y)
         )
 
+        # Create the DAG Model here
         for hypp in trained_hyperplanes:
             _clsf = self._classifiers.get(hypp.class_p, {})
             _clsf[hypp.class_n] = hypp
@@ -183,9 +180,7 @@ class iFBTSVM(SVC):
         :param X: Array of features to classify
         :return: Array of classification result
         """
-        # TODO : Maybe optimize with parallel joblib here
-
-        X = self.kernel.transform(X=X)
+        X = self.kernel.transform(X=X) if self.kernel else X
 
         lh_keys = list(set(self._classifiers.keys()))
 
