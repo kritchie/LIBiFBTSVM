@@ -6,7 +6,6 @@ import numpy as np
 from joblib import (  # type: ignore
     delayed,
     Parallel,
-    parallel_backend,
 )
 from numpy import linalg
 from sklearn.svm import SVC
@@ -241,7 +240,6 @@ class iFBTSVM(SVC):
         :param params: Keyword arguments and their values
         :return: None
         """
-        # TODO Add unit tests
         for key, val in params.items():
             setattr(self.parameters, key, val)
 
@@ -254,5 +252,10 @@ class iFBTSVM(SVC):
         :param sample_weight: Not supported
         :return: Accuracy score of the classification
         """
-        # TODO : implement DAG scoring here
-        pass
+        predictions = self.predict(X=X)
+        accuracy = 0
+        for i in range(len(y)):
+            if predictions[i] == y[i]:
+                accuracy += 1
+
+        return accuracy / len(y)
