@@ -20,7 +20,7 @@ git clone https://github.com/kritchie/LIBiFBTSVM.git
 Navigate to the cloned repository and call the following command (it is recommded to do so in a virtual environment):
 
 ```bash
-python setup.py --install
+python setup.py install
 ```
 
 ## Usage
