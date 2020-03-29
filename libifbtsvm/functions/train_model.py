@@ -32,6 +32,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
     _proj_grad_min_old = float('-inf')
 
     _projected_grads = []
+    _keep = []
 
     iterations = 0
 
@@ -50,19 +51,19 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
             if alphas_new[pos] == 0:
 
                 if _grad > _proj_grad_max_old:
-                    np.delete(x_new, pos)
                     continue
 
                 elif _grad < 0:
+                    _keep.append(pos)
                     gradient = _grad
 
             elif alphas_new[pos] == CCx[pos]:
 
                 if _grad < _proj_grad_min_old:
-                    np.delete(x_new, pos)
                     continue
 
                 elif _grad > 0:
+                    _keep.append(pos)
                     gradient = _grad
 
             else:
@@ -82,7 +83,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
                 if gradient != 0:
                     _projected_grads.append(gradient)
 
-        x_old = x_new
+        x_old = x_new[_keep]
 
         iterations += 1
 
