@@ -41,7 +41,7 @@ class Hyperparameters(object):
         :param C2:
         :param C3:
         :param C4:
-        :param max_evals:
+        :param max_iter:
         :param phi:
         :param repition:
         """
@@ -51,7 +51,7 @@ class Hyperparameters(object):
         self.C2: float = C2
         self.C3: float = C3
         self.C4: float = C4
-        self.max_evaluations: int = max_evals
+        self.max_iter: int = max_iter
         self.phi: float = phi
         self.kernel: Kernel = kernel
         self.repetition = repetition

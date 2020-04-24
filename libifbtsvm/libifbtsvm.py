@@ -8,12 +8,14 @@ from joblib import (  # type: ignore
     Parallel,
 )
 from numpy import linalg
+from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 
 from libifbtsvm.functions import (
     fuzzy_membership,
     train_model,
 )
+from libifbtsvm.functions.ctrain_model import train_model as ctrain_model
 from libifbtsvm.models.ifbtsvm import (
     ClassificationModel,
     FuzzyMembership,
@@ -146,8 +148,18 @@ class iFBTSVM(SVC):
         _C4 = parameters.C4
 
         # Train the model using the algorithm described by (de Mello et al. 2019)
+
+        # Python
         hyperplane_p: Hyperplane = train_model(parameters=parameters, H=H_n, G=H_p, C=_C4, CCx=_C3)
         hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
+
+        # Cython
+        # _train_p = ctrain_model(parameters.max_iter, parameters.epsilon, H_n, H_p, _C4, _C3)
+        # hyperplane_p = Hyperplane(*_train_p)
+        # _train_n = ctrain_model(parameters.max_iter, parameters.epsilon, H_p, H_n, _C2, _C1)
+        # hyperplane_n = Hyperplane(*_train_n)
+
+        # Common to both Cython and Python
         hyperplane_n.weights = -hyperplane_n.weights
 
         return ClassificationModel(class_p=y_p[0],
@@ -453,10 +465,4 @@ class iFBTSVM(SVC):
         :param sample_weight: Not supported
         :return: Accuracy score of the classification
         """
-        predictions = self.predict(X=X)
-        accuracy = 0
-        for i in range(len(y)):
-            if predictions[i] == y[i]:
-                accuracy += 1
-
-        return accuracy / len(y)
+        return accuracy_score(y, self.predict(X), sample_weight=sample_weight)

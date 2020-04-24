@@ -17,7 +17,7 @@ if __name__ == '__main__':
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_iter=1,
         phi=0.00001,
         kernel=None,
     )

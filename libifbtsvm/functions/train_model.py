@@ -27,7 +27,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
     alphas_new = np.zeros(length_g)
     alpha_old = np.zeros(length_g)
 
-    weights = np.zeros((H.shape[1], 1))
+    weights = np.zeros((H.shape[1],))
     _proj_grad_max_old = float('inf')
     _proj_grad_min_old = float('-inf')
 
@@ -36,7 +36,10 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
 
     iterations = 0
 
-    for i in range(parameters.max_evaluations):
+    _substract_buffer = np.zeros_like(weights)
+
+    for i in range(parameters.max_iter):
+
         _proj_grad_max_new = float('-inf')
         _proj_grad_min_new = float('inf')
 
@@ -76,9 +79,9 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
                 alpha_old[pos] = alphas_new[pos]
                 alphas_new[pos] = np.minimum(np.maximum(alphas_new[pos] - _grad / Q[pos], 0), CCx[pos])
 
-                weights_aux = _Q[:, pos] * (alphas_new[pos] - alpha_old[pos])
-                weights_aux = np.expand_dims(weights_aux, axis=1)
-                weights = np.subtract(weights, weights_aux)
+                weights_aux = np.multiply(_Q[:, pos], (alphas_new[pos] - alpha_old[pos]))
+                np.subtract(weights, weights_aux, out=_substract_buffer)
+                weights = _substract_buffer
 
                 if gradient != 0:
                     _projected_grads.append(gradient)

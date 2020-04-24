@@ -15,7 +15,7 @@ def test_train_model():
     C = 2
 
     _mock_params = Hyperparameters()
-    _mock_params.max_evaluations = 1
+    _mock_params.max_iter = 1
     _mock_params.epsilon = 0.0001
 
     model = train_model(parameters=_mock_params, H=H_p, G=H_n, C=C, CCx=CCx)
