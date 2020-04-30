@@ -65,7 +65,7 @@ class iFBTSVM(SVC):
         X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X  # type: ignore
 
         # Train the DAG models in parallel
-        trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='threads')(
+        trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(
             delayed(self._fit_dag_step)(subset, self.parameters) for subset in self._generate_sub_sets(X, y)
         )
 
@@ -122,6 +122,18 @@ class iFBTSVM(SVC):
                                    weights_n=hyperplane_n)
 
     @classmethod
+    def _increment_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters, classifier: ClassificationModel):
+        """
+        Increment already trained DAG models
+
+        :param subset:
+        :param parameters:
+        :param classifier:
+        :return:
+        """
+        print(f'')
+
+    @classmethod
     def _generate_sub_sets(cls, X: np.ndarray, y: np.ndarray) -> DAGSubSet:
         """
         Generates sub-data sets based on the DAG classification principle.
@@ -162,15 +174,40 @@ class iFBTSVM(SVC):
         """
         return self.parameters
 
-    def increment(self, X: np.ndarray, y: np.ndarray):
+    def increment(self, X: np.ndarray, y: np.ndarray, batch_size: int = None):
         """
 
         :param X:
         :param y:
         :return:
         """
-        # TODO : Implement classifier increment here
-        pass
+
+        if not batch_size:
+            batch_size = len(y)
+
+        for i in range(len(y)):
+            index = i * batch_size
+            data = X[index: index + batch_size]
+            label = y[index: index + batch_size]
+
+            data = self.kernel.fit_transform(X=data, y=label) if self.kernel else X  # type: ignore
+
+            # Train the DAG models in parallel
+            trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(
+                delayed(self._increment_dag_step)
+                (
+                    subset,
+                    self.parameters,
+                    self._classifiers[subset[1][0]][subset[3][0]]  # Get classifier for ClassP/ClassN of this subset
+                )
+                for subset in self._generate_sub_sets(X, y)
+            )
+
+            # # Create the DAG Model here
+            # for hypp in trained_hyperplanes:
+            #     _clsf = self._classifiers.get(hypp.class_p, {})
+            #     _clsf[hypp.class_n] = hypp
+            #     self._classifiers[hypp.class_p] = _clsf
 
     def predict(self, X):
         """
