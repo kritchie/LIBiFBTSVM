@@ -23,7 +23,7 @@ if __name__ == '__main__':
     )
 
     # Initialisation iFBTSVM
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
     # Training
     before = time.monotonic()
@@ -34,3 +34,14 @@ if __name__ == '__main__':
     # Prediction
     accuracy = ifbtsvm.score(X=dataset.data, y=dataset.target)
     print(f'Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+
+    dataset2 = load_iris()
+
+    before = time.monotonic()
+    ifbtsvm.increment(X=dataset2.data, y=dataset.target, batch_size=50)
+    after = time.monotonic()
+    elapsed = (after - before)
+
+    # Prediction
+    accuracy = ifbtsvm.score(X=dataset.data, y=dataset.target)
+    print(f'Accuracy Updated iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')

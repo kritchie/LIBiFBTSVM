@@ -76,11 +76,13 @@ class iFBTSVM(SVC):
             self._classifiers[hypp.class_p] = _clsf
 
     @classmethod
-    def _fit_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters):
+    def _fit_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters) -> ClassificationModel:
         """
         Trains a classifier based on a sub-set of data, as a step in the DAG classifier algorithm.
 
         :param subset: Sub-set of data containing the training data for this DAG step
+        :param parameters: The classifier hyperparameters
+        :returns: A classification model for this subset
         """
         # Features (x_p) of the current "positive" class
         x_p = subset[0]
@@ -122,16 +124,21 @@ class iFBTSVM(SVC):
                                    weights_n=hyperplane_n)
 
     @classmethod
-    def _increment_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters, classifier: ClassificationModel):
+    def _increment_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters,
+                            classifier: ClassificationModel) -> ClassificationModel:
         """
         Increment already trained DAG models
 
-        :param subset:
-        :param parameters:
-        :param classifier:
-        :return:
+        :param subset: Sub-set of data containing the update data for this DAG step
+        :param parameters: The classifier hyperparameters
+        :param classifier: The classifier to update
+        :return: The updated classifier
         """
-        print(f'')
+        print(f'Subset: {subset}')
+        print(f'Parameters: {parameters}')
+        print(f'Classifier: {classifier}')
+
+        return classifier
 
     @classmethod
     def _generate_sub_sets(cls, X: np.ndarray, y: np.ndarray) -> DAGSubSet:
@@ -185,15 +192,16 @@ class iFBTSVM(SVC):
         if not batch_size:
             batch_size = len(y)
 
-        for i in range(len(y)):
-            index = i * batch_size
-            data = X[index: index + batch_size]
-            label = y[index: index + batch_size]
+        i = 0
+        while i < len(y):
+            data = X[i: i + batch_size]
+            label = y[i: i + batch_size]
+            i += batch_size
 
-            data = self.kernel.fit_transform(X=data, y=label) if self.kernel else X  # type: ignore
+            X = self.kernel.fit_transform(X=data, y=label) if self.kernel else X  # type: ignore
 
-            # Train the DAG models in parallel
-            trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(
+            # Update the DAG models in parallel
+            updated_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(
                 delayed(self._increment_dag_step)
                 (
                     subset,
@@ -204,7 +212,7 @@ class iFBTSVM(SVC):
             )
 
             # # Create the DAG Model here
-            # for hypp in trained_hyperplanes:
+            # for hypp in updated_hyperplanes:
             #     _clsf = self._classifiers.get(hypp.class_p, {})
             #     _clsf[hypp.class_n] = hypp
             #     self._classifiers[hypp.class_p] = _clsf
