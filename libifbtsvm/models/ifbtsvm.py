@@ -30,7 +30,7 @@ class FuzzyMembership(object):
 class Hyperparameters(object):
 
     def __init__(self, epsilon=None, fuzzy=None, C1=None, C2=None, C3=None, C4=None,
-                 max_evals=None, phi=None, kernel=None):
+                 max_evals=None, phi=None, kernel=None, repetition=None):
         """
         Creates an object representing the hyperparameters of a classification model
 
@@ -43,6 +43,7 @@ class Hyperparameters(object):
         :param C4:
         :param max_evals:
         :param phi:
+        :param repition:
         """
         self.epsilon: float = epsilon
         self.fuzzy_parameter: float = fuzzy
@@ -53,6 +54,7 @@ class Hyperparameters(object):
         self.max_evaluations: int = max_evals
         self.phi: float = phi
         self.kernel: Kernel = kernel
+        self.repetition = repetition
 
 
 class Hyperplane(object):
@@ -76,7 +78,7 @@ class Hyperplane(object):
 class ClassificationModel(object):
 
     def __init__(self, fuzzy: FuzzyMembership, weights_p: Hyperplane, weights_n: Hyperplane,
-                 class_p: Label, class_n: Label):
+                 class_p: Label, class_n: Label, data_p: np.ndarray, data_n: np.ndarray):
         """
         Creates an object representing a classification model
 
@@ -86,9 +88,13 @@ class ClassificationModel(object):
         :param weights_n:
         :param class_p:
         :param class_n:
+        :param data_p:
+        :param data_n:
         """
         self.fuzzy_membership: FuzzyMembership = fuzzy
         self.p: Hyperplane = weights_p
         self.n: Hyperplane = weights_n
         self.class_p: Label = class_p
         self.class_n: Label = class_n
+        self.data_p: np.ndarray = data_p
+        self.data_n: np.ndarray = data_n

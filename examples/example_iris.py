@@ -25,9 +25,11 @@ if __name__ == '__main__':
     # Initialisation iFBTSVM
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
+    _temp = dataset.data[:int(len(dataset.data)/2),:]
+
     # Training
     before = time.monotonic()
-    ifbtsvm.fit(X=dataset.data, y=dataset.target)
+    ifbtsvm.fit(X=dataset.data[:int(len(dataset.data)/2)], y=dataset.target[:int(len(dataset.data)/2)])
     after = time.monotonic()
     elapsed = (after - before)
 
@@ -38,7 +40,8 @@ if __name__ == '__main__':
     dataset2 = load_iris()
 
     before = time.monotonic()
-    ifbtsvm.increment(X=dataset2.data, y=dataset.target, batch_size=50)
+    ifbtsvm.update(X=dataset2.data[int(len(dataset.data)/2):], y=dataset.target[int(len(dataset.data)/2):],
+                   batch_size=20)
     after = time.monotonic()
     elapsed = (after - before)
 
