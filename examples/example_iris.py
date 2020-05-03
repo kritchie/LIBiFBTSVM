@@ -25,11 +25,9 @@ if __name__ == '__main__':
     # Initialisation iFBTSVM
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
-    _temp = dataset.data[:int(len(dataset.data)/2),:]
-
     # Training
     before = time.monotonic()
-    ifbtsvm.fit(X=dataset.data[:int(len(dataset.data)/2)], y=dataset.target[:int(len(dataset.data)/2)])
+    ifbtsvm.fit(X=dataset.data, y=dataset.target)
     after = time.monotonic()
     elapsed = (after - before)
 
@@ -37,11 +35,9 @@ if __name__ == '__main__':
     accuracy = ifbtsvm.score(X=dataset.data, y=dataset.target)
     print(f'Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
 
-    dataset2 = load_iris()
-
+    # Update Model
     before = time.monotonic()
-    ifbtsvm.update(X=dataset2.data[int(len(dataset.data)/2):], y=dataset.target[int(len(dataset.data)/2):],
-                   batch_size=20)
+    ifbtsvm.update(X=dataset.data, y=dataset.target, batch_size=150)
     after = time.monotonic()
     elapsed = (after - before)
 

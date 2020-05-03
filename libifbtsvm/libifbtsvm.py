@@ -65,6 +65,8 @@ class iFBTSVM(SVC):
         """
         res = [idx for idx, val in enumerate(score[1]) if val >= repetition]
 
+        # TODO : Optimize this by removing the "delete" and using
+        #      : a keep approach instead
         if res:
             resi = np.where(score[1] <= repetition)
             sco0 = np.delete(score[0], resi)
@@ -80,7 +82,8 @@ class iFBTSVM(SVC):
         return score, alphas, fuzzy, data
 
     @staticmethod
-    def _filter_gradients(gradients: np.ndarray, data: np.ndarray, label: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def _filter_gradients(weights: np.ndarray, gradients: np.ndarray, data:
+                          np.ndarray, label: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Filters a data set based on its projected gradients.
 
@@ -91,13 +94,13 @@ class iFBTSVM(SVC):
         :param data: Data to filter
         :return: Filtered data
         """
-        _data = np.append(data, np.ones(len(data), axis=1), axis=1)
-        _new_grads = np.matmul(_data, gradients) - 1
+        _data = np.append(data, np.ones((len(data), 1)), axis=1)
+        _new_grads = np.matmul(-_data, weights) - 1
 
-        hi_candidates = np.where(gradients > max(gradients))
-        lo_candidates = np.where(gradients < min(gradients))
+        keep_hi_candidates = np.where(_new_grads < max(gradients))
+        keep_lo_candidates = np.where(_new_grads > min(gradients))
 
-        index = np.argwhere(np.any([hi_candidates, lo_candidates]) == False)
+        index = np.concatenate((keep_hi_candidates[0], keep_lo_candidates[0]), axis=0)
         _data = _data[index]
         _label = label[index]
 
@@ -177,10 +180,12 @@ class iFBTSVM(SVC):
         i = 0
         while i < len(x_p):
 
-            _batch_xp, _batch_yp = cls._filter_gradients(gradients=classifier.p.projected_gradients,
+            _batch_xp, _batch_yp = cls._filter_gradients(weights=classifier.p.weights,
+                                                         gradients=classifier.p.projected_gradients,
                                                          data=x_p[i:i+batch_size], label=y_p[i:i+batch_size])
 
-            _batch_xn, _batch_yn = cls._filter_gradients(gradients=classifier.n.projected_gradients,
+            _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.n.weights,
+                                                         gradients=classifier.n.projected_gradients,
                                                          data=x_n[i:i+batch_size], label=y_n[i:i+batch_size])
 
             _data_xp = np.concatenate((classifier.data_p, _batch_xp))
