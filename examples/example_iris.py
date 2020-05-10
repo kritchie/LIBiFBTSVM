@@ -34,13 +34,3 @@ if __name__ == '__main__':
     # Prediction
     accuracy = ifbtsvm.score(X=dataset.data, y=dataset.target)
     print(f'Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
-
-    # Update Model
-    before = time.monotonic()
-    ifbtsvm.update(X=dataset.data, y=dataset.target, batch_size=150)
-    after = time.monotonic()
-    elapsed = (after - before)
-
-    # Prediction
-    accuracy = ifbtsvm.score(X=dataset.data, y=dataset.target)
-    print(f'Accuracy Updated iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
