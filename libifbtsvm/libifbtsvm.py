@@ -1,5 +1,5 @@
 
-from typing import Dict, Generator, Tuple
+from typing import Dict, Generator, Optional, Tuple, Union
 
 import numpy as np
 
@@ -22,7 +22,7 @@ from libifbtsvm.models.ifbtsvm import (
 )
 
 TrainingSet = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-DAGSubSet = Generator[TrainingSet, None, None]
+DAGSubSet = Union[TrainingSet, Generator[TrainingSet, None, None]]
 
 
 class iFBTSVM(SVC):
@@ -42,14 +42,21 @@ class iFBTSVM(SVC):
         :param c:
         :return:
         """
-        res, com1, com2 = np.intersect1d(score[0], np.asarray(c), return_indices=True)
-        score[1][com1] += 1
+        if score is None:
+            score = np.asarray(c)
+            sc = np.ones(len(c))
+            score = np.array((score, sc))
+
+        res, indices_score, indices_c = np.intersect1d(score[0], np.asarray(c), return_indices=True)
+        score[1][indices_score] += 1
         diff = np.setdiff1d(score[0], np.asarray(c))
 
-        if diff:
+        if diff.any():
             _zdiff = np.ones(len(diff))
-            np.insert(score[0], _zdiff)
-            np.insert(score[1], np.array((diff, _zdiff)))
+            new_score = np.unique(np.array((diff, _zdiff)))
+
+            np.append(score[0], [new_score])
+            np.append(score[1], [_zdiff])
 
         else:
             _intersec = np.asarray(c)
@@ -72,7 +79,7 @@ class iFBTSVM(SVC):
             sco0 = np.delete(score[0], resi)
             sco1 = np.delete(score[1], resi)
 
-            if sco0:
+            if len(sco0):
                 score = [[sco0.tolist()], [sco1.tolist()]]
 
             alphas = np.delete(alphas, c)
@@ -83,7 +90,7 @@ class iFBTSVM(SVC):
 
     @staticmethod
     def _filter_gradients(weights: np.ndarray, gradients: np.ndarray, data:
-                          np.ndarray, label: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+                          np.ndarray, label: np.ndarray) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
         """
         Filters a data set based on its projected gradients.
 
@@ -97,11 +104,14 @@ class iFBTSVM(SVC):
         _data = np.append(data, np.ones((len(data), 1)), axis=1)
         _new_grads = np.matmul(-_data, weights) - 1
 
-        keep_hi_candidates = np.where(_new_grads < max(gradients))
-        keep_lo_candidates = np.where(_new_grads > min(gradients))
+        keep = np.where(np.logical_and(_new_grads >= min(gradients), _new_grads <= max(gradients)))
 
-        index = np.concatenate((keep_hi_candidates[0], keep_lo_candidates[0]), axis=0)
-        _data = _data[index]
+        index = keep[0]
+
+        if len(index):
+            return None, None
+
+        _data = data[index]
         _label = label[index]
 
         return _data, _label
@@ -175,8 +185,8 @@ class iFBTSVM(SVC):
         x_n = subset[2]
         y_n = subset[3]
 
-        score_p = []
-        score_n = []
+        score_p = None
+        score_n = None
         i = 0
         while i < len(x_p):
 
@@ -184,12 +194,16 @@ class iFBTSVM(SVC):
                                                          gradients=classifier.p.projected_gradients,
                                                          data=x_p[i:i+batch_size], label=y_p[i:i+batch_size])
 
-            _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.n.weights,
-                                                         gradients=classifier.n.projected_gradients,
-                                                         data=x_n[i:i+batch_size], label=y_n[i:i+batch_size])
+            _batch_xn, _batch_yn = None, None
+            if x_n.any() and y_n.any():
+                _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.n.weights,
+                                                             gradients=classifier.n.projected_gradients,
+                                                             data=x_n[i:i+batch_size], label=y_n[i:i+batch_size])
 
-            _data_xp = np.concatenate((classifier.data_p, _batch_xp))
-            _data_xn = np.concatenate((classifier.data_n, _batch_xn))
+            i += batch_size
+
+            _data_xp = np.concatenate((classifier.data_p, _batch_xp)) if _batch_xp is not None else classifier.data_p
+            _data_xn = np.concatenate((classifier.data_n, _batch_xn)) if _batch_xn is not None else classifier.data_n
 
             # Calculate fuzzy membership for points
             membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=_data_xp, class_n=_data_xn)
@@ -219,35 +233,33 @@ class iFBTSVM(SVC):
             classifier.p = hyperplane_p
             classifier.n = hyperplane_n
             classifier.fuzzy_membership = membership
-            classifier.data_p = _data_xp
-            classifier.data_n = _data_xn
 
-            c_pos = classifier.data_p[np.nonzero(classifier.p.alpha <= parameters.phi)]
-            c_neg = classifier.data_n[np.nonzero(classifier.n.alpha <= parameters.phi)]
+            c_pos = np.nonzero(classifier.p.alpha <= parameters.phi)[0]
+            c_neg = np.nonzero(classifier.n.alpha <= parameters.phi)[0]
 
             score_p = cls._compute_score(score_p, c_pos)
             score_n = cls._compute_score(score_n, c_neg)
 
-            if score_p:
+            if score_p.any():
 
                 score, alpha, fuzzy, data = cls._decrement(repetition=parameters.repetition,
                                                            score=score_p,
                                                            c=c_pos,
                                                            alphas=classifier.p.alpha,
                                                            fuzzy=classifier.fuzzy_membership.sp,
-                                                           data=_batch_xp)
+                                                           data=_data_xp)
 
                 classifier.p.alpha = alpha
                 classifier.fuzzy_membership.sp = fuzzy
                 classifier.data_p = data
 
-            if score_n:
+            if score_n.any():
                 score, alpha, fuzzy, data = cls._decrement(repetition=parameters.repetition,
                                                            score=score_n,
                                                            c=c_neg,
                                                            alphas=classifier.n.alpha,
                                                            fuzzy=classifier.fuzzy_membership.sn,
-                                                           data=_batch_xn)
+                                                           data=_data_xn)
 
                 classifier.n.alpha = alpha
                 classifier.fuzzy_membership.sn = fuzzy
@@ -279,6 +291,9 @@ class iFBTSVM(SVC):
         - [3] Labels for current X negative
         """
         classes = np.unique(y)
+        if len(classes) == 1:
+            return X[classes[0]], y[classes[0]], np.ndarray(), np.ndarray()
+
         for _p in range(classes.size):
 
             for _n in range(_p + 1, classes.size):
