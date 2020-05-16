@@ -47,44 +47,38 @@ class iFBTSVM(SVC):
             sc = np.ones(len(c))
             score = np.array((score, sc))
 
-        res, indices_score, indices_c = np.intersect1d(score[0], np.asarray(c), return_indices=True)
-        score[1][indices_score] += 1
-        diff = np.setdiff1d(score[0], np.asarray(c))
-
-        if diff.any():
-            _zdiff = np.ones(len(diff))
-            new_score = np.unique(np.array((diff, _zdiff)))
-
-            np.append(score[0], [new_score])
-            np.append(score[1], [_zdiff])
-
         else:
-            _intersec = np.asarray(c)
-            score = np.array((_intersec, np.ones(len(_intersec)))).astype(int)
+            res, indices_score, indices_c = np.intersect1d(score[0], np.asarray(c), return_indices=True)
+            score[1][indices_score] += 1
+            diff = np.setdiff1d(score[0], np.asarray(c))
+
+            if diff.any():
+                _zdiff = np.ones(len(diff))
+                new_score = np.unique(np.array((diff, _zdiff)))
+
+                np.append(score[0], [new_score])
+                np.append(score[1], [_zdiff])
 
         return score
 
     @staticmethod
-    def _decrement(repetition, score, c, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def _decrement(candidates, score, c, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
 
         :return:
         """
-        res = [idx for idx, val in enumerate(score[1]) if val >= repetition]
-
         # TODO : Optimize this by removing the "delete" and using
         #      : a keep approach instead
-        if res:
-            resi = np.where(score[1] <= repetition)
-            sco0 = np.delete(score[0], resi)
-            sco1 = np.delete(score[1], resi)
+        # resi = np.where(score[1] <= repetition)
+        sco0 = np.delete(score[0], candidates)
+        sco1 = np.delete(score[1], candidates)
 
-            if len(sco0):
-                score = [[sco0.tolist()], [sco1.tolist()]]
+        if len(sco0):
+            score = [[sco0.tolist()], [sco1.tolist()]]
 
-            alphas = np.delete(alphas, c)
-            fuzzy = np.delete(fuzzy, c)
-            data = np.delete(data, c)
+        alphas = np.delete(alphas, c, axis=0)
+        fuzzy = np.delete(fuzzy, c, axis=0)
+        data = np.delete(data, c, axis=0)
 
         return score, alphas, fuzzy, data
 
@@ -202,8 +196,13 @@ class iFBTSVM(SVC):
 
             i += batch_size
 
-            _data_xp = np.concatenate((classifier.data_p, _batch_xp)) if _batch_xp is not None else classifier.data_p
-            _data_xn = np.concatenate((classifier.data_n, _batch_xn)) if _batch_xn is not None else classifier.data_n
+            _data_xp = classifier.data_p
+            if _batch_xp is not None and _batch_xp.any():
+                _data_xp = np.concatenate((_data_xp, _batch_xp)) if _batch_xp is not None else classifier.data_p
+
+            _data_xn = classifier.data_n
+            if _batch_xn is not None and _batch_xn.any():
+                _data_xn = np.concatenate((_data_xn, _batch_xn)) if _batch_xn is not None else classifier.data_n
 
             # Calculate fuzzy membership for points
             membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=_data_xp, class_n=_data_xn)
@@ -240,9 +239,12 @@ class iFBTSVM(SVC):
             score_p = cls._compute_score(score_p, c_pos)
             score_n = cls._compute_score(score_n, c_neg)
 
-            if score_p.any():
+            _decr_candidates_p = np.where(score_p[1] >= parameters.repetition)[0]
+            _decr_candidates_n = np.where(score_n[1] >= parameters.repetition)[0]
 
-                score, alpha, fuzzy, data = cls._decrement(repetition=parameters.repetition,
+            if _decr_candidates_p.any():
+
+                score, alpha, fuzzy, data = cls._decrement(candidates=_decr_candidates_p,
                                                            score=score_p,
                                                            c=c_pos,
                                                            alphas=classifier.p.alpha,
@@ -253,8 +255,8 @@ class iFBTSVM(SVC):
                 classifier.fuzzy_membership.sp = fuzzy
                 classifier.data_p = data
 
-            if score_n.any():
-                score, alpha, fuzzy, data = cls._decrement(repetition=parameters.repetition,
+            if _decr_candidates_n.any():
+                score, alpha, fuzzy, data = cls._decrement(candidates=_decr_candidates_n,
                                                            score=score_n,
                                                            c=c_neg,
                                                            alphas=classifier.n.alpha,
