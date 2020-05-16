@@ -69,12 +69,10 @@ class iFBTSVM(SVC):
         """
         # TODO : Optimize this by removing the "delete" and using
         #      : a keep approach instead
-        # resi = np.where(score[1] <= repetition)
-        sco0 = np.delete(score[0], candidates)
-        sco1 = np.delete(score[1], candidates)
+        sco0 = np.delete(score[0], candidates, axis=0)
+        sco1 = np.delete(score[1], candidates, axis=0)
 
-        if len(sco0):
-            score = [[sco0.tolist()], [sco1.tolist()]]
+        score = np.asarray([sco0, sco1])
 
         alphas = np.delete(alphas, c, axis=0)
         fuzzy = np.delete(fuzzy, c, axis=0)
