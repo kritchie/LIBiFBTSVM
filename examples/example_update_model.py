@@ -23,15 +23,15 @@ if __name__ == '__main__':
         max_evals=500,
         phi=0.00001,
         kernel=None,
-        repetition=5,
+        repetition=1,
     )
 
     # Initialisation iFBTSVM
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
     # Training
     before = time.monotonic()
-    ifbtsvm.fit(X=dataset.data[:10], y=dataset.target[:10])
+    ifbtsvm.fit(X=dataset.data[:int(len(dataset.data)/2)], y=dataset.target[:int(len(dataset.data)/2)])
     after = time.monotonic()
     elapsed = (after - before)
 
@@ -41,7 +41,8 @@ if __name__ == '__main__':
 
     # Update Model
     before = time.monotonic()
-    ifbtsvm.update(X=dataset.data[10:], y=dataset.target[10:], batch_size=50)
+    ifbtsvm.update(X=dataset.data[int(len(dataset.data)/2):], y=dataset.target[int(len(dataset.data)/2):],
+                   batch_size=20)
     after = time.monotonic()
     elapsed = (after - before)
 

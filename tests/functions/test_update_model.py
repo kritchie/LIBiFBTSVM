@@ -51,12 +51,16 @@ def test_decrement():
 
 
 def test_filter_gradients():
-    # TODO : Implement Me
-    pass
 
+    weights = np.asarray([[-0.07136844], [-0.21096315], [0.31555559], [0.14247409], [-0.5475241]])
+    gradients = np.asarray([0.01, 0.01, 0.01, 0.01, 0.01])
+    data = np.asarray([[5.4, 3.4, 1.7, 0.2],
+                       [5.1, 3.4, 1.5, 0.2],
+                       [4.6, 3.1, 1.5, 0.2],
+                       [4.7, 3.2, 1.6, 0.2],
+                       [5.3, 3.7, 1.5, 0.2]])
+    label = np.ones((5, 1))
 
-def test_increment_dag_step():
-    # TODO : Implement Me
-    pass
+    filtered = iFBTSVM._filter_gradients(weights=weights, gradients=gradients, data=data, label=label)
 
-
+    assert np.array_equal(filtered, np.asarray([]))
