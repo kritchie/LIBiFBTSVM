@@ -39,7 +39,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
         _proj_grad_max_new = float('-inf')
         _proj_grad_min_new = float('inf')
 
-        # np.random.shuffle(x_old)
+        np.random.shuffle(x_old)
 
         for j in range(len(x_old)):
 

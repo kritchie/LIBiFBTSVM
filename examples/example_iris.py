@@ -23,7 +23,7 @@ if __name__ == '__main__':
     )
 
     # Initialisation iFBTSVM
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
     # Training
     before = time.monotonic()
