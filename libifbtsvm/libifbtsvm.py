@@ -184,13 +184,13 @@ class iFBTSVM(SVC):
 
             _batch_xp, _batch_yp = cls._filter_gradients(weights=classifier.p.weights,
                                                          gradients=classifier.p.projected_gradients,
-                                                         data=x_p[i:i+batch_size], label=y_p[i:i+batch_size])
+                                                         data=x_p[i:i + batch_size], label=y_p[i:i + batch_size])
 
             _batch_xn, _batch_yn = None, None
             if x_n.any() and y_n.any():
                 _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.n.weights,
                                                              gradients=classifier.n.projected_gradients,
-                                                             data=x_n[i:i+batch_size], label=y_n[i:i+batch_size])
+                                                             data=x_n[i:i + batch_size], label=y_n[i:i + batch_size])
 
             i += batch_size
 
