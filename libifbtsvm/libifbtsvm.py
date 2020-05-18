@@ -100,7 +100,7 @@ class iFBTSVM(SVC):
 
         index = keep[0]
 
-        if len(index):
+        if not len(index):
             return None, None
 
         _data = data[index]

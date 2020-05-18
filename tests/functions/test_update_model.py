@@ -53,7 +53,7 @@ def test_decrement():
 def test_filter_gradients():
 
     weights = np.asarray([[-0.07136844], [-0.21096315], [0.31555559], [0.14247409], [-0.5475241]])
-    gradients = np.asarray([0.01, 0.01, 0.01, 0.01, 0.01])
+    gradients = np.asarray([0.1, 0.2, 0.3, 0.4, 0.5])
     data = np.asarray([[5.4, 3.4, 1.7, 0.2],
                        [5.1, 3.4, 1.5, 0.2],
                        [4.6, 3.1, 1.5, 0.2],
@@ -63,4 +63,5 @@ def test_filter_gradients():
 
     filtered = iFBTSVM._filter_gradients(weights=weights, gradients=gradients, data=data, label=label)
 
-    assert np.array_equal(filtered, np.asarray([]))
+    assert np.array_equal(filtered[0], np.asarray([[5.1, 3.4, 1.5, 0.2], [5.3, 3.7, 1.5, 0.2]]))
+    assert np.array_equal(filtered[1], np.asarray([[1], [1]]))
