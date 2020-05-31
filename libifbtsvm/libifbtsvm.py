@@ -297,8 +297,8 @@ class iFBTSVM(SVC):
         for _p in range(classes.size):
 
             for _n in range(_p + 1, classes.size):
-                _index_p = np.where(y == classes[_p])
-                _index_n = np.where(y == classes[_n])
+                _index_p = np.where(y == classes[_p])[0]
+                _index_n = np.where(y == classes[_n])[0]
 
                 yield X[_index_p], y[_index_p], X[_index_n], y[_index_n]
 
