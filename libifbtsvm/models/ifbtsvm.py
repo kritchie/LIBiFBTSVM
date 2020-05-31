@@ -51,7 +51,7 @@ class Hyperparameters(object):
         self.C2: float = C2
         self.C3: float = C3
         self.C4: float = C4
-        self.max_iter: int = max_iter
+        self.max_iter: int = max_evals
         self.phi: float = phi
         self.kernel: Kernel = kernel
         self.repetition = repetition
