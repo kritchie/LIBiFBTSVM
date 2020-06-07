@@ -25,7 +25,7 @@ def border():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
@@ -36,7 +36,7 @@ def border():
     test_data = pd.read_csv(f'{DATA_DIR}/Border_test_data.csv')
     test_label = pd.read_csv(f'{DATA_DIR}/Border_test_label.csv')
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
     # Training
     before = time.monotonic()
@@ -46,7 +46,7 @@ def border():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
-    print(f'Border dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'Border: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def coil():
@@ -58,7 +58,7 @@ def coil():
         C2=4,
         C3=4,
         C4=4,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=20, n_components=400),
         repetition=10,
@@ -69,7 +69,7 @@ def coil():
     test_data = pd.read_csv(f'{DATA_DIR}/Coil_test_data.csv')
     test_label = pd.read_csv(f'{DATA_DIR}/Coil_test_label.csv')
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -79,7 +79,7 @@ def coil():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
-    print(f'Coil dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'Coil: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def mnist():
@@ -90,7 +90,7 @@ def mnist():
         C2=10,
         C3=10,
         C4=10,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.0002, n_components=2400),
         repetition=10,
@@ -101,7 +101,7 @@ def mnist():
     test_data = pd.read_csv(f'{DATA_DIR}/MNIST_test_data.csv')
     test_label = pd.read_csv(f'{DATA_DIR}/MNIST_test_label.csv')
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=10)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -111,7 +111,7 @@ def mnist():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
-    print(f'MNIST dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'MNIST: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def outdoor():
@@ -120,12 +120,12 @@ def outdoor():
         epsilon=1e-10,
         fuzzy=0.1,
         C1=10,
-        C2=2,
+        C2=1,
         C3=10,
-        C4=2,
-        max_evals=500,
+        C4=1,
+        max_evals=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.001, n_components=500),
+        kernel=None,  # RBFSampler(gamma=0.001, n_components=500),
         repetition=10,
     )
 
@@ -134,7 +134,7 @@ def outdoor():
     test_data = pd.read_csv(f'{DATA_DIR}/Outdoor_test_data.csv')
     test_label = pd.read_csv(f'{DATA_DIR}/Outdoor_test_label.csv')
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -144,7 +144,7 @@ def outdoor():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
-    print(f'Outdoor dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'Outdoor: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def overlap():
@@ -156,7 +156,7 @@ def overlap():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
@@ -167,7 +167,7 @@ def overlap():
     test_data = pd.read_csv(f'{DATA_DIR}/Overlap_test_data.csv')
     test_label = pd.read_csv(f'{DATA_DIR}/Overlap_test_label.csv')
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -177,7 +177,7 @@ def overlap():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
-    print(f'Overlap dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'Overlap: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def hyper():
@@ -189,7 +189,7 @@ def hyper():
         C2=4,
         C3=5,
         C4=4,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
@@ -201,7 +201,7 @@ def hyper():
     test_data = _data.values[10000:, 0:10]
     test_label = _data.values[10000:, 10:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -211,7 +211,7 @@ def hyper():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'HYPER 10K dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'HYPER 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def led():
@@ -222,7 +222,7 @@ def led():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
@@ -234,7 +234,7 @@ def led():
     test_data = _data.values[10000:, 0:24]
     test_label = _data.values[10000:, 24:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -244,7 +244,7 @@ def led():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'LED 10K dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'LED 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def rbf():
@@ -255,7 +255,7 @@ def rbf():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.45, n_components=300),
         repetition=10,
@@ -267,7 +267,7 @@ def rbf():
     test_data = _data.values[10000:, 0:10]
     test_label = _data.values[10000:, 10:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -277,7 +277,7 @@ def rbf():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'RBF 10K dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'RBF 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def rtg():
@@ -288,7 +288,7 @@ def rtg():
         C2=2,
         C3=2.5,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.6, n_components=1400),
         repetition=10,
@@ -300,7 +300,7 @@ def rtg():
     test_data = _data.values[10000:, 0:10]
     test_label = _data.values[10000:, 10:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -310,7 +310,7 @@ def rtg():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'RTG 10K dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'RTG 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def sea():
@@ -321,7 +321,7 @@ def sea():
         C2=1,
         C3=10,
         C4=1,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
         repetition=10,
@@ -333,7 +333,7 @@ def sea():
     test_data = _data.values[10000:, 0:3]
     test_label = _data.values[10000:, 3:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -343,7 +343,7 @@ def sea():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'SEA 10K dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'SEA 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def letter():
@@ -354,7 +354,7 @@ def letter():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.01, n_components=350),
         repetition=10,
@@ -372,7 +372,9 @@ def letter():
     for i, lbl in enumerate(test_label):
         test_label[i] = ord(lbl) - 65  # '65' -> 'A'
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    test_label = test_label.reshape(test_label.shape[0], 1).astype(np.int)
+
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -381,8 +383,8 @@ def letter():
     elapsed = (after - before)
 
     # Prediction
-    accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'Letter dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    accuracy = ifbtsvm.score(X=test_data, y=test_label.reshape(test_label.shape[0], 1))
+    print(f'Letter: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def dna():
@@ -393,7 +395,7 @@ def dna():
         C2=4,
         C3=4,
         C4=4,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.003, n_components=500),
         repetition=10,
@@ -423,7 +425,7 @@ def dna():
                 feats = s.split(':')
                 test_data[i, int(feats[0])-1] = int(feats[1])
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -433,7 +435,7 @@ def dna():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'DNA dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'DNA: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def usps():
@@ -444,7 +446,7 @@ def usps():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.007, n_components=1000),
         repetition=10,
@@ -474,7 +476,7 @@ def usps():
                 feats = s.split(':')
                 test_data[i, int(feats[0]) - 1] = int(feats[1])
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -484,7 +486,7 @@ def usps():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'USPS dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'USPS: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def isolet():
@@ -495,7 +497,7 @@ def isolet():
         C2=10,
         C3=10,
         C4=10,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=RBFSampler(gamma=0.002, n_components=1000),
         repetition=10,
@@ -509,7 +511,7 @@ def isolet():
     test_data = _data.values[:, :617]
     test_label = _data.values[:, 617]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -519,7 +521,7 @@ def isolet():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
-    print(f'ISOLET dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'ISOLET: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 def gisette():
@@ -531,7 +533,7 @@ def gisette():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_evals=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
@@ -542,7 +544,7 @@ def gisette():
     test_data = pd.read_csv(f'{DATA_DIR}/gisette_valid.data', delim_whitespace=True)
     test_label = pd.read_csv(f'{DATA_DIR}/gisette_valid.labels', delim_whitespace=True)
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=-2)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
     before = time.monotonic()
@@ -552,17 +554,17 @@ def gisette():
 
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
-    print(f'Gisette dataset: Accuracy iFBTSVM: {accuracy * 100.0}% Train time: {elapsed}s')
+    print(f'Gisette: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
 
 
 if __name__ == '__main__':
-    border()
-    coil()
-    overlap()
-    outdoor()
-    mnist()
-    hyper()
-    led()
+    # border()
+    # coil()
+    # overlap()
+    # outdoor()
+    # mnist()
+    # hyper()
+    # led()
     rbf()
     rtg()
     sea()
