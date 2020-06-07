@@ -86,7 +86,7 @@ class iFBTSVM(SVC):
     def _filter_gradients(weights: np.ndarray, gradients: np.ndarray, data:
                           np.ndarray, label: np.ndarray) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
         """
-        Filters a data set based on its projected gradients.
+        Filters data points based on the projected gradients.
 
         Kept data will include only values for which the projected gradients that will expand the support
         vectors, meaning that are outside boundaries of current support vectors of the classifier.
@@ -406,21 +406,21 @@ class iFBTSVM(SVC):
 
         for row in X:
 
-            _dag_index_lh = 0
-            _dag_index_rh = 0
+            _dag_index_p = 0
+            _dag_index_n = 0
 
             f_pos = 0
             f_neg = 0
 
-            class_1 = None
-            class_2 = None
+            class_p = None
+            class_n = None
 
             while True:
                 try:
-                    class_1 = lh_keys[_dag_index_lh]
-                    class_2 = rh_keys[_dag_index_rh]
+                    class_p = lh_keys[_dag_index_p]
+                    class_n = rh_keys[_dag_index_n]
 
-                    model: ClassificationModel = self._classifiers[class_1][class_2]
+                    model: ClassificationModel = self._classifiers[class_p][class_n]
 
                     f_pos = np.divide(np.matmul(row, model.p.weights[:-1]) + model.p.weights[-1],
                                       linalg.norm(model.p.weights[:-1]))
@@ -428,19 +428,19 @@ class iFBTSVM(SVC):
                                       linalg.norm(model.n.weights[:-1]))
 
                     if abs(f_pos) < abs(f_neg):
-                        _dag_index_lh += 1
-                        _dag_index_rh += 1
+                        _dag_index_p = _dag_index_n + 1
+                        _dag_index_n += 1
 
                     else:
-                        _dag_index_rh += 1
+                        _dag_index_n += 1
 
                 except (StopIteration, IndexError):
 
                     if abs(f_pos) < abs(f_neg):
-                        classes.append(class_2)
+                        classes.append(class_n)
 
                     else:
-                        classes.append(class_1)
+                        classes.append(class_p)
 
                     break
 
@@ -461,7 +461,7 @@ class iFBTSVM(SVC):
         Returns the accuracy of a classification.
 
         :param X: Array of features to classify
-        :param y: Array of truth values for the features
+        :param y: 1-D Array of truth values for the features
         :param sample_weight: Not supported
         :return: Accuracy score of the classification
         """
