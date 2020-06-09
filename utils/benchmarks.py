@@ -26,7 +26,7 @@ def border():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -59,7 +59,7 @@ def coil():
         C3=4,
         C4=4,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=20, n_components=400),
         repetition=10,
     )
@@ -91,7 +91,7 @@ def mnist():
         C3=10,
         C4=10,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.0002, n_components=2400),
         repetition=10,
     )
@@ -124,7 +124,7 @@ def outdoor():
         C3=10,
         C4=1,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.001, n_components=500),
         repetition=10,
     )
@@ -157,7 +157,7 @@ def overlap():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -190,7 +190,7 @@ def hyper():
         C3=5,
         C4=4,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -223,7 +223,7 @@ def led():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -256,7 +256,7 @@ def rbf():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.45, n_components=300),
         repetition=10,
     )
@@ -289,7 +289,7 @@ def rtg():
         C3=2.5,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.6, n_components=1400),
         repetition=10,
     )
@@ -322,7 +322,7 @@ def sea():
         C3=10,
         C4=1,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
         repetition=10,
     )
@@ -355,7 +355,7 @@ def letter():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.01, n_components=350),
         repetition=10,
     )
@@ -396,7 +396,7 @@ def dna():
         C3=4,
         C4=4,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.003, n_components=500),
         repetition=10,
     )
@@ -447,7 +447,7 @@ def usps():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.007, n_components=1000),
         repetition=10,
     )
@@ -498,7 +498,7 @@ def isolet():
         C3=10,
         C4=10,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.002, n_components=1000),
         repetition=10,
     )
@@ -534,7 +534,7 @@ def gisette():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -558,13 +558,13 @@ def gisette():
 
 
 if __name__ == '__main__':
-    # border()
-    # coil()
-    # overlap()
-    # outdoor()
-    # mnist()
-    # hyper()
-    # led()
+    border()
+    coil()
+    overlap()
+    outdoor()
+    mnist()
+    hyper()
+    led()
     rbf()
     rtg()
     sea()

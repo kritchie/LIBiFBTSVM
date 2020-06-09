@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-joblib==0.14.1            # via scikit-learn
+joblib==0.15.1
 numpy==1.18.1
 scikit-learn==0.22.1
 scipy==1.4.1              # via scikit-learn

@@ -26,7 +26,7 @@ def border():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -73,7 +73,7 @@ def coil():
         C3=4,
         C4=4,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=20, n_components=400),
         repetition=10,
     )
@@ -93,6 +93,7 @@ def coil():
     after = time.monotonic()
     elapsed = (after - before)
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    print(f'Done training ({np.around(elapsed, 3)}s), updating...')
 
     # Update
     batch_size = int(len(train_data.values) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -119,7 +120,7 @@ def mnist():
         C3=10,
         C4=10,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.0002, n_components=2400),
         repetition=10,
     )
@@ -166,7 +167,7 @@ def outdoor():
         C3=10,
         C4=1,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.001, n_components=500),
         repetition=10,
     )
@@ -213,7 +214,7 @@ def overlap():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -260,7 +261,7 @@ def hyper():
         C3=5,
         C4=4,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -280,7 +281,7 @@ def hyper():
                 y=train_label[:num_points].reshape(train_label[:num_points].shape[0]))
     after = time.monotonic()
     elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -292,7 +293,7 @@ def hyper():
     u_elapsed = after - before
 
     # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Hyper\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
@@ -307,7 +308,7 @@ def led():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         repetition=10,
     )
@@ -327,7 +328,7 @@ def led():
                 y=train_label[:num_points].reshape(train_label[:num_points].shape[0]))
     after = time.monotonic()
     elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -339,7 +340,7 @@ def led():
     u_elapsed = after - before
 
     # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'LED\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
@@ -354,7 +355,7 @@ def rbf():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.45, n_components=300),
         repetition=10,
     )
@@ -374,7 +375,7 @@ def rbf():
                 y=train_label[:num_points].reshape(train_label[:num_points].shape[0]))
     after = time.monotonic()
     elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -386,7 +387,7 @@ def rbf():
     u_elapsed = after - before
 
     # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RBF\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
@@ -401,7 +402,7 @@ def rtg():
         C3=2.5,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.6, n_components=1400),
         repetition=10,
     )
@@ -421,7 +422,7 @@ def rtg():
                 y=train_label[:num_points].reshape(train_label[:num_points].shape[0]))
     after = time.monotonic()
     elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -433,7 +434,7 @@ def rtg():
     u_elapsed = after - before
 
     # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RTG\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
@@ -448,7 +449,7 @@ def sea():
         C3=10,
         C4=1,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
         repetition=10,
     )
@@ -468,7 +469,7 @@ def sea():
                 y=train_label[:num_points].reshape(train_label[:num_points].shape[0]))
     after = time.monotonic()
     elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -480,7 +481,7 @@ def sea():
     u_elapsed = after - before
 
     # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'SEA\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
@@ -495,7 +496,7 @@ def letter():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.01, n_components=350),
         repetition=10,
     )
@@ -523,7 +524,7 @@ def letter():
                 y=train_label[:num_points].reshape(train_label[:num_points].shape[0]))
     after = time.monotonic()
     elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -535,7 +536,7 @@ def letter():
     u_elapsed = after - before
 
     # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Letter\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
@@ -550,7 +551,7 @@ def dna():
         C3=4,
         C4=4,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.003, n_components=500),
         repetition=10,
     )
@@ -615,7 +616,7 @@ def usps():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.007, n_components=1000),
         repetition=10,
     )
@@ -680,7 +681,7 @@ def isolet():
         C3=10,
         C4=10,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=RBFSampler(gamma=0.002, n_components=1000),
         repetition=10,
     )
@@ -698,23 +699,23 @@ def isolet():
     # Training
     num_points = 500
     before = time.monotonic()
-    ifbtsvm.fit(X=train_data[:num_points].values,
-                y=train_label[:num_points].values.reshape(train_label[:num_points].values.shape[0]))
+    ifbtsvm.fit(X=train_data[:num_points],
+                y=train_label[:num_points])
     after = time.monotonic()
     elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     # Update
-    batch_size = int(len(train_data.values) / 100 * 5 + 0.5)  # 5% of original dataset
+    batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
     before = time.monotonic()
-    ifbtsvm.update(X=train_data[num_points:].values,
-                   y=train_label[num_points:].values.reshape(train_label[num_points:].values.shape[0]),
+    ifbtsvm.update(X=train_data[num_points:],
+                   y=train_label[num_points:],
                    batch_size=batch_size)
     after = time.monotonic()
     u_elapsed = after - before
 
     # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
+    accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Isolet\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
@@ -730,7 +731,7 @@ def gisette():
         C3=8,
         C4=2,
         max_evals=250,
-        phi=0,
+        phi=0.00001,
         kernel=None,
         repetition=10,
     )
@@ -768,18 +769,19 @@ def gisette():
 
 
 if __name__ == '__main__':
-    # border()
-    # coil()
-    # overlap()
-    # outdoor()
-    mnist()
-    # hyper()
-    # led()
-    # rbf()
-    # rtg()
-    # sea()
-    # letter()
-    # dna()
-    # usps()
-    # isolet()
-    # gisette()
+    border()
+    # coil() - Doesn't converge on training
+    overlap()
+    outdoor()
+    # mnist()
+    hyper()
+    led()
+
+    rbf()
+    rtg()
+    sea()
+    letter()
+    dna()
+    # usps()  # Error
+    isolet()
+    gisette()
