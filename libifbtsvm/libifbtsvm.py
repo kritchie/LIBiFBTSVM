@@ -64,21 +64,19 @@ class iFBTSVM(SVC):
         return score
 
     @staticmethod
-    def _decrement(candidates, score, c, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def _decrement(keep_candidates, score, keep_c, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
 
         :return:
         """
-        # TODO : Optimize this by removing the "delete" and using
-        #      : a keep approach instead
-        sco0 = np.delete(score[0], candidates, axis=0)
-        sco1 = np.delete(score[1], candidates, axis=0)
+        sco0 = score[0][keep_candidates]
+        sco1 = score[1][keep_candidates]
 
         score = np.asarray([sco0, sco1])
 
-        alphas = np.delete(alphas, c, axis=0)
-        fuzzy = np.delete(fuzzy, c, axis=0)
-        data = np.delete(data, c, axis=0)
+        alphas = alphas[keep_c]
+        fuzzy = fuzzy[keep_c]
+        data = data[keep_c]
 
         return score, alphas, fuzzy, data
 
@@ -200,8 +198,8 @@ class iFBTSVM(SVC):
 
             _batch_xn, _batch_yn = None, None
             if x_n.any() and y_n.any():
-                _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.n.weights,
-                                                             gradients=classifier.n.projected_gradients,
+                _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.p.weights,
+                                                             gradients=classifier.p.projected_gradients,
                                                              data=x_n[i:i + batch_size], label=y_n[i:i + batch_size])
 
             i += batch_size
@@ -243,20 +241,20 @@ class iFBTSVM(SVC):
             classifier.n = hyperplane_n
             classifier.fuzzy_membership = membership
 
-            c_pos = np.nonzero(classifier.p.alpha <= parameters.phi)[0]
-            c_neg = np.nonzero(classifier.n.alpha <= parameters.phi)[0]
+            c_pos = np.nonzero(classifier.p.alpha > parameters.phi)[0]
+            c_neg = np.nonzero(classifier.n.alpha > parameters.phi)[0]
 
             score_p = cls._compute_score(score_p, c_pos)
             score_n = cls._compute_score(score_n, c_neg)
 
-            _decr_candidates_p = np.where(score_p[1] >= parameters.repetition)[0]
-            _decr_candidates_n = np.where(score_n[1] >= parameters.repetition)[0]
+            _keep_candidates_p = np.where(score_p[1] < parameters.repetition)[0]
+            _keep_candidates_n = np.where(score_n[1] < parameters.repetition)[0]
 
-            if _decr_candidates_p.any():
+            if _keep_candidates_p.any():
 
-                score, alpha, fuzzy, data = cls._decrement(candidates=_decr_candidates_p,
+                score, alpha, fuzzy, data = cls._decrement(keep_candidates=_keep_candidates_p,
                                                            score=score_p,
-                                                           c=c_pos,
+                                                           keep_c=c_pos,
                                                            alphas=classifier.p.alpha,
                                                            fuzzy=classifier.fuzzy_membership.sp,
                                                            data=_data_xp)
@@ -265,10 +263,10 @@ class iFBTSVM(SVC):
                 classifier.fuzzy_membership.sp = fuzzy
                 classifier.data_p = data
 
-            if _decr_candidates_n.any():
-                score, alpha, fuzzy, data = cls._decrement(candidates=_decr_candidates_n,
+            if _keep_candidates_n.any():
+                score, alpha, fuzzy, data = cls._decrement(keep_candidates=_keep_candidates_n,
                                                            score=score_n,
-                                                           c=c_neg,
+                                                           keep_c=c_neg,
                                                            alphas=classifier.n.alpha,
                                                            fuzzy=classifier.fuzzy_membership.sn,
                                                            data=_data_xn)
@@ -332,7 +330,11 @@ class iFBTSVM(SVC):
 
         :param sample_weight: (Not supported)
         """
-        X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X  # type: ignore
+
+        if getattr(self.kernel, 'fit_transform', None):
+            X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X  # type: ignore
+        elif callable(self.kernel):
+            X = self.kernel(X=X, Y=y)
 
         # Train the DAG models in parallel
         trained_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(

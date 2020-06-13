@@ -15,7 +15,7 @@ def border():
 
     params = Hyperparameters(
         epsilon=1e-10,
-        fuzzy=0.1,
+        fuzzy=0.01,
         C1=8,
         C2=2,
         C3=8,
