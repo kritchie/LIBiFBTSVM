@@ -31,7 +31,7 @@ def border():
     test_data = pd.read_csv(f'{DATA_DIR}/Border_test_data.csv')
     test_label = pd.read_csv(f'{DATA_DIR}/Border_test_label.csv')
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=2)
 
     # Training
     num_points = 60
