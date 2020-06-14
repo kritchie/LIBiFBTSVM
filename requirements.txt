@@ -6,5 +6,6 @@
 #
 joblib==0.15.1
 numpy==1.18.1
-scikit-learn==0.22.1
+scikit-learn==0.23.1
 scipy==1.4.1              # via scikit-learn
+threadpoolctl==2.1.0      # via scikit-learn

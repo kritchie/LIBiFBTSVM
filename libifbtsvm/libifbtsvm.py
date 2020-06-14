@@ -9,7 +9,7 @@ from joblib import (  # type: ignore
 )
 from numpy import linalg
 from sklearn.metrics import accuracy_score
-from sklearn.svm import SVC
+from sklearn.base import BaseEstimator
 
 from libifbtsvm.functions import (
     fuzzy_membership,
@@ -27,10 +27,10 @@ TrainingSet = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 DAGSubSet = Union[TrainingSet, Generator[TrainingSet, None, None]]
 
 
-class iFBTSVM(SVC):
+class iFBTSVM(BaseEstimator):
 
-    def __init__(self, parameters: Hyperparameters, *args, n_jobs=1, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parameters: Hyperparameters, n_jobs=1):
+        super().__init__()
         self.parameters = parameters
         self._classifiers: Dict = {}
         self.n_jobs = n_jobs
@@ -343,15 +343,6 @@ class iFBTSVM(SVC):
             _clsf[hypp.class_n] = hypp
             self._classifiers[hypp.class_p] = _clsf
 
-    def get_params(self, deep=True):
-        """
-        Returns parameters of the classifier.
-
-        :param deep: Not-implemented, as no effect and is kept to comply with sklearn.svm.SVC interface
-        :return: A dictionary of parameters
-        """
-        return self.parameters
-
     def update(self, X: np.ndarray, y: np.ndarray, batch_size: int = None):
         """
         Update an already trained classifier
@@ -450,16 +441,6 @@ class iFBTSVM(SVC):
                     break
 
         return classes
-
-    def set_params(self, **params):
-        """
-        Sets parameters of the classifier
-
-        :param params: Keyword arguments and their values
-        :return: None
-        """
-        for key, val in params.items():
-            setattr(self.parameters, key, val)
 
     def score(self, X, y, sample_weight=None):
         """
