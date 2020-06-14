@@ -30,7 +30,7 @@ class FuzzyMembership(object):
 class Hyperparameters(object):
 
     def __init__(self, epsilon=None, fuzzy=None, C1=None, C2=None, C3=None, C4=None,
-                 max_evals=None, phi=None, kernel=None, repetition=None):
+                 max_iter=None, phi=None, kernel=None, forget_score=None):
         """
         Creates an object representing the hyperparameters of a classification model
 
@@ -43,7 +43,7 @@ class Hyperparameters(object):
         :param C4:
         :param max_iter:
         :param phi:
-        :param repition:
+        :param forget_score:
         """
         self.epsilon: float = epsilon
         self.fuzzy_parameter: float = fuzzy
@@ -51,10 +51,10 @@ class Hyperparameters(object):
         self.C2: float = C2
         self.C3: float = C3
         self.C4: float = C4
-        self.max_iter: int = max_evals
+        self.max_iter: int = max_iter
         self.phi: float = phi
         self.kernel: Kernel = kernel
-        self.repetition = repetition
+        self.forget_score = forget_score
 
 
 class Hyperplane(object):

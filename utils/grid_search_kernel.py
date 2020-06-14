@@ -48,10 +48,10 @@ def border():
                     C2=2,
                     C3=8,
                     C4=2,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
@@ -95,10 +95,10 @@ def coil():
                     C2=10,
                     C3=10,
                     C4=10,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 train_data = pd.read_csv(f'{DATA_DIR}/Coil_train_data.csv')
@@ -150,10 +150,10 @@ def mnist():
                     C2=10,
                     C3=10,
                     C4=10,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 train_data = pd.read_csv(f'{DATA_DIR}/MNIST_train_data.csv')
@@ -206,10 +206,10 @@ def outdoor():
                     C2=1,
                     C3=10,
                     C4=1,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 train_data = pd.read_csv(f'{DATA_DIR}/Outdoor_train_data.csv')
@@ -262,10 +262,10 @@ def overlap():
                     C2=2,
                     C3=8,
                     C4=2,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 train_data = pd.read_csv(f'{DATA_DIR}/Overlap_train_data.csv')
@@ -318,10 +318,10 @@ def rbf():
                     C2=2,
                     C3=8,
                     C4=2,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 _data = pd.read_csv(f'{DATA_DIR}/RBF/10K/RBF10K.csv')
@@ -375,10 +375,10 @@ def rtg():
                     C2=2,
                     C3=2.5,
                     C4=2,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 _data = pd.read_csv(f'{DATA_DIR}/RTG/10K/RTG10K.csv')
@@ -449,10 +449,10 @@ def letter():
                     C2=2,
                     C3=8,
                     C4=2,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 test_label = test_label.reshape(test_label.shape[0], 1).astype(np.int)
@@ -516,10 +516,10 @@ def dna():
                     C2=4,
                     C3=4,
                     C4=4,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
@@ -581,10 +581,10 @@ def usps():
                     C2=2,
                     C3=8,
                     C4=2,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
@@ -627,10 +627,10 @@ def isolet():
                     C2=10,
                     C3=10,
                     C4=10,
-                    max_evals=250,
+                    max_iter=250,
                     phi=0,
                     kernel=RBFSampler(gamma=gamma, n_components=n_comp),
-                    repetition=10,
+                    forget_score=10,
                 )
 
                 _data = pd.read_csv(f'{DATA_DIR}/isolet1+2+3+4.data')

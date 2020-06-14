@@ -25,10 +25,10 @@ def border():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.4, n_components=150),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.04, n_components=150),
+        forget_score=10,
     )
 
     train_data = pd.read_csv(f'{DATA_DIR}/Border_train_data.csv')
@@ -58,10 +58,10 @@ def coil():
         C2=4,
         C3=4,
         C4=4,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=20, n_components=400),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.2, n_components=100),
+        forget_score=10,
     )
 
     train_data = pd.read_csv(f'{DATA_DIR}/Coil_train_data.csv')
@@ -90,10 +90,10 @@ def mnist():
         C2=10,
         C3=10,
         C4=10,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.0002, n_components=2400),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.00002, n_components=2400),
+        forget_score=10,
     )
 
     train_data = pd.read_csv(f'{DATA_DIR}/MNIST_train_data.csv')
@@ -123,10 +123,10 @@ def outdoor():
         C2=1,
         C3=10,
         C4=1,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=None,  # RBFSampler(gamma=0.001, n_components=500),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.0001, n_components=500),
+        forget_score=10,
     )
 
     train_data = pd.read_csv(f'{DATA_DIR}/Outdoor_train_data.csv')
@@ -156,10 +156,10 @@ def overlap():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
         kernel=RBFSampler(gamma=0.4, n_components=150),
-        repetition=10,
+        forget_score=10,
     )
 
     train_data = pd.read_csv(f'{DATA_DIR}/Overlap_train_data.csv')
@@ -189,10 +189,10 @@ def hyper():
         C2=4,
         C3=5,
         C4=4,
-        max_evals=250,
+        max_iter=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
-        repetition=10,
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/HYPER/10K/HYPER10K.csv')
@@ -222,10 +222,10 @@ def led():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
-        repetition=10,
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/LED/10K/LED10K.csv')
@@ -255,10 +255,10 @@ def rbf():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.45, n_components=300),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.045, n_components=300),
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/RBF/10K/RBF10K.csv')
@@ -288,10 +288,10 @@ def rtg():
         C2=2,
         C3=2.5,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.6, n_components=1400),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.06, n_components=1400),
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/RTG/10K/RTG10K.csv')
@@ -321,10 +321,10 @@ def sea():
         C2=1,
         C3=10,
         C4=1,
-        max_evals=250,
+        max_iter=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
-        repetition=10,
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/SEA/10K/SEA10K.csv')
@@ -354,10 +354,10 @@ def letter():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.01, n_components=350),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.001, n_components=350),
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/letter-recognition.data')
@@ -395,10 +395,10 @@ def dna():
         C2=4,
         C3=4,
         C4=4,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.003, n_components=500),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.01, n_components=1000),
+        forget_score=10,
     )
 
     train_data = np.zeros((1400, 180))
@@ -446,10 +446,10 @@ def usps():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.007, n_components=1000),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.0007, n_components=1000),
+        forget_score=10,
     )
 
     train_data = np.zeros((7291, 256))
@@ -497,10 +497,10 @@ def isolet():
         C2=10,
         C3=10,
         C4=10,
-        max_evals=250,
+        max_iter=250,
         phi=0,
-        kernel=RBFSampler(gamma=0.002, n_components=1000),
-        repetition=10,
+        kernel=RBFSampler(gamma=0.0002, n_components=1000),
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/isolet1+2+3+4.data')
@@ -533,10 +533,10 @@ def gisette():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
-        repetition=10,
+        forget_score=10,
     )
 
     train_data = pd.read_csv(f'{DATA_DIR}/gisette_train.data', delim_whitespace=True)
@@ -558,18 +558,18 @@ def gisette():
 
 
 if __name__ == '__main__':
-    border()
-    coil()
-    overlap()
+    # border()
+    # coil()
+    # overlap()
     outdoor()
-    mnist()
-    hyper()
-    led()
-    rbf()
-    rtg()
-    sea()
-    letter()
-    dna()
-    usps()
-    isolet()
-    gisette()
+    # mnist()
+    # hyper()
+    # led()
+    # rbf()
+    # rtg()
+    # sea()
+    # letter()
+    # dna()
+    # usps()
+    # isolet()
+    # gisette()

@@ -19,10 +19,10 @@ def rbf():
         C2=2,
         C3=8,
         C4=2,
-        max_evals=250,
+        max_iter=250,
         phi=0,
         kernel=RBFSampler(gamma=0.45, n_components=300),
-        repetition=10,
+        forget_score=10,
     )
 
     _data = pd.read_csv(f'{DATA_DIR}/RBF/10K/RBF10K.csv')

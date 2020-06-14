@@ -33,6 +33,16 @@ def test_compute_score():
 
     assert np.array_equal(_score, np.asarray([[1, 2, 3, 4, 5], [2, 2, 2, 2, 2]]))
 
+    score = np.asarray([[1, 2, 3, 4, 5], [1, 1, 1, 1, 1]])
+    c = np.zeros((10,))
+    for i in range(10):
+        c[i] = i + 1
+
+    _score = svm._compute_score(score, c)
+
+    assert np.array_equal(_score, np.asarray([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                              [2, 2, 2, 2, 2, 1, 1, 1, 1, 1]]))
+
 
 def test_decrement():
 

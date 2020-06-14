@@ -246,8 +246,8 @@ class iFBTSVM(BaseEstimator):
         score_p = cls._compute_score(score_p, c_pos)
         score_n = cls._compute_score(score_n, c_neg)
 
-        _keep_candidates_p = np.where(score_p[1] < parameters.repetition)[0]
-        _keep_candidates_n = np.where(score_n[1] < parameters.repetition)[0]
+        _keep_candidates_p = np.where(score_p[1] < parameters.forget_score)[0]
+        _keep_candidates_n = np.where(score_n[1] < parameters.forget_score)[0]
 
         if _keep_candidates_p.any():
 

@@ -21,10 +21,10 @@ if __name__ == '__main__':
         C2=2,
         C3=8,
         C4=2,
-        max_evals=500,
+        max_iter=500,
         phi=1e-9,
         kernel=RBFSampler(gamma=1, n_components=20),
-        repetition=5,
+        forget_score=5,
     )
 
     # Initialisation iFBTSVM
