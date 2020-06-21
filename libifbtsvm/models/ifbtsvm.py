@@ -1,5 +1,5 @@
 
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 
@@ -78,7 +78,8 @@ class Hyperplane(object):
 class ClassificationModel(object):
 
     def __init__(self, fuzzy: FuzzyMembership, weights_p: Hyperplane, weights_n: Hyperplane,
-                 class_p: Label, class_n: Label, data_p: np.ndarray, data_n: np.ndarray):
+                 class_p: Label, class_n: Label, data_p: np.ndarray, data_n: np.ndarray,
+                 score_p: Optional[np.ndarray] = None, score_n: Optional[np.ndarray] = None):
         """
         Creates an object representing a classification model
 
@@ -98,3 +99,5 @@ class ClassificationModel(object):
         self.class_n: Label = class_n
         self.data_p: np.ndarray = data_p
         self.data_n: np.ndarray = data_n
+        self.score_p: Optional[np.ndarray] = score_p
+        self.score_n: Optional[np.ndarray] = score_n
