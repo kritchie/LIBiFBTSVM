@@ -52,31 +52,32 @@ class iFBTSVM(BaseEstimator):
         else:
             res, indices_score, indices_c = np.intersect1d(score[0], np.asarray(c), return_indices=True)
             score[1][indices_score] += 1
-            diff = np.setdiff1d(score[0], np.asarray(c))
+            diff = np.setdiff1d(np.asarray(c), score[0])
 
             if diff.any():
                 _zdiff = np.ones(len(diff))
-                new_score = np.unique(np.array((diff, _zdiff)))
+                new_score = np.array((diff, _zdiff))
 
-                np.append(score[0], [new_score])
-                np.append(score[1], [_zdiff])
+                score_0 = np.append(score[0], [new_score[0]])
+                score_1 = np.append(score[1], [new_score[1]])
+                score = np.asarray([score_0, score_1])
 
         return score
 
     @staticmethod
-    def _decrement(keep_candidates, score, keep_c, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def _decrement(candidates, score, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
 
         :return:
         """
-        sco0 = score[0][keep_candidates]
-        sco1 = score[1][keep_candidates]
+        sco0 = np.delete(score[0], candidates)
+        sco1 = np.delete(score[1], candidates)
 
         score = np.asarray([sco0, sco1])
 
-        alphas = alphas[keep_c]
-        fuzzy = fuzzy[keep_c]
-        data = data[keep_c]
+        alphas = np.delete(alphas, candidates)
+        fuzzy = np.delete(fuzzy, candidates)
+        data = np.delete(data, candidates, axis=0)
 
         return score, alphas, fuzzy, data
 
@@ -96,15 +97,15 @@ class iFBTSVM(BaseEstimator):
         _data = np.append(data, np.ones((len(data), 1)), axis=1)
         _new_grads = np.matmul(-_data, weights) - 1
 
-        keep = np.where(np.logical_and(_new_grads >= min(gradients), _new_grads <= max(gradients)))
+        _del = np.argwhere(np.logical_or(_new_grads <= min(gradients), _new_grads >= max(gradients)))
 
-        index = keep[0]
+        index = np.reshape(_del, newshape=_del.shape[0],)
 
         if not len(index):
-            return None, None
+            return data, label
 
-        _data = data[index]
-        _label = label[index]
+        _data = np.delete(data, index, axis=0)
+        _label = np.delete(label, index)
 
         return _data, _label
 
@@ -187,19 +188,18 @@ class iFBTSVM(BaseEstimator):
         x_n = subset[2]
         y_n = subset[3]
 
-        score_p = None
-        score_n = None
-
         _batch_xp, _batch_yp = cls._filter_gradients(weights=classifier.p.weights,
                                                      gradients=classifier.p.projected_gradients,
                                                      data=x_p, label=y_p)
+
+        if _batch_xp is None:
+            return classifier
 
         _batch_xn, _batch_yn = None, None
         if x_n.any() and y_n.any():
             _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.p.weights,
                                                          gradients=classifier.p.projected_gradients,
                                                          data=x_n, label=y_n)
-
 
         _data_xp = classifier.data_p
         if _batch_xp is not None and _batch_xp.any():
@@ -238,22 +238,26 @@ class iFBTSVM(BaseEstimator):
         classifier.n = hyperplane_n
         classifier.fuzzy_membership = membership
 
-        c_pos = np.nonzero(classifier.p.alpha <= parameters.phi)[0]
-        c_neg = np.nonzero(classifier.n.alpha <= parameters.phi)[0]
-        keep_c_pos = np.nonzero(classifier.p.alpha > parameters.phi)[0]
-        keep_c_neg = np.nonzero(classifier.n.alpha > parameters.phi)[0]
+        classifier.data_p = _data_xp
+        classifier.data_n = _data_xn
 
-        score_p = cls._compute_score(score_p, c_pos)
-        score_n = cls._compute_score(score_n, c_neg)
+        c_pos = np.argwhere(classifier.p.alpha <= parameters.phi)
+        c_pos = np.reshape(c_pos, newshape=(c_pos.shape[0],))
+        c_neg = np.argwhere(classifier.n.alpha <= parameters.phi)
+        c_neg = np.reshape(c_neg, newshape=(c_neg.shape[0],))
 
-        _keep_candidates_p = np.where(score_p[1] < parameters.forget_score)[0]
-        _keep_candidates_n = np.where(score_n[1] < parameters.forget_score)[0]
+        classifier.score_p = cls._compute_score(classifier.score_p, c_pos)
+        classifier.score_n = cls._compute_score(classifier.score_n, c_neg)
 
-        if _keep_candidates_p.any():
+        _candidates_p = np.argwhere(classifier.score_p[1] >= parameters.forget_score)
+        _candidates_p = np.reshape(_candidates_p, newshape=(_candidates_p.shape[0], ))
+        _candidates_n = np.argwhere(classifier.score_n[1] >= parameters.forget_score)
+        _candidates_n = np.reshape(_candidates_n, newshape=(_candidates_n.shape[0], ))
 
-            score, alpha, fuzzy, data = cls._decrement(keep_candidates=_keep_candidates_p,
-                                                       score=score_p,
-                                                       keep_c=keep_c_pos,
+        if _candidates_p.any():
+
+            score, alpha, fuzzy, data = cls._decrement(candidates=_candidates_p,
+                                                       score=classifier.score_p,
                                                        alphas=classifier.p.alpha,
                                                        fuzzy=classifier.fuzzy_membership.sp,
                                                        data=_data_xp)
@@ -261,11 +265,12 @@ class iFBTSVM(BaseEstimator):
             classifier.p.alpha = alpha
             classifier.fuzzy_membership.sp = fuzzy
             classifier.data_p = data
+            classifier.score_p = score
 
-        if _keep_candidates_n.any():
-            score, alpha, fuzzy, data = cls._decrement(keep_candidates=_keep_candidates_n,
-                                                       score=score_n,
-                                                       keep_c=keep_c_neg,
+        if _candidates_n.any():
+
+            score, alpha, fuzzy, data = cls._decrement(candidates=_candidates_n,
+                                                       score=classifier.score_n,
                                                        alphas=classifier.n.alpha,
                                                        fuzzy=classifier.fuzzy_membership.sn,
                                                        data=_data_xn)
@@ -273,6 +278,7 @@ class iFBTSVM(BaseEstimator):
             classifier.n.alpha = alpha
             classifier.fuzzy_membership.sn = fuzzy
             classifier.data_n = data
+            classifier.score_n = score
 
         return classifier
 
@@ -360,7 +366,7 @@ class iFBTSVM(BaseEstimator):
             batch_x = X[i: i + batch_size]
             batch_y = y[i: i + batch_size]
 
-            batch_x = self.kernel.fit_transform(X=batch_x, y=batch_y) if self.kernel else batch_x  # type: ignore
+            batch_x = self.kernel.transform(X=batch_x) if self.kernel else batch_x  # type: ignore
 
             # Update the DAG models in parallel
             updated_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(
