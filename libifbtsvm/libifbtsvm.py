@@ -363,6 +363,10 @@ class iFBTSVM(BaseEstimator):
         i = 0
         while i < len(X):
 
+            # TODO : Remove me
+            import time
+            before = time.monotonic()
+
             batch_x = X[i: i + batch_size]
             batch_y = y[i: i + batch_size]
 
@@ -386,6 +390,10 @@ class iFBTSVM(BaseEstimator):
                 self._classifiers[hypp.class_p] = _clsf
 
             i += batch_size
+
+            # TODO Remove me
+            after = time.monotonic()
+            print(f'Batch {i} of {len(X)} done... elapsed: {(after-before)}s')
 
     def predict(self, X):
         """
