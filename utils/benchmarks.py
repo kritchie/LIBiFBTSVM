@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 import time
 
+from datetime import datetime, timezone
+
 from sklearn.kernel_approximation import RBFSampler
 
 from libifbtsvm import iFBTSVM, Hyperparameters
@@ -25,9 +27,9 @@ def border():
         C2=2,
         C3=8,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.04, n_components=150),
+        kernel=RBFSampler(gamma=0.1, n_components=1000),
         forget_score=10,
     )
 
@@ -47,6 +49,7 @@ def border():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Border: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def coil():
@@ -58,9 +61,9 @@ def coil():
         C2=4,
         C3=4,
         C4=4,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.2, n_components=100),
+        kernel=RBFSampler(gamma=50, n_components=500),
         forget_score=10,
     )
 
@@ -80,6 +83,7 @@ def coil():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Coil: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def mnist():
@@ -90,9 +94,9 @@ def mnist():
         C2=10,
         C3=10,
         C4=10,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.00002, n_components=2400),
+        kernel=RBFSampler(gamma=0.01, n_components=1000),
         forget_score=10,
     )
 
@@ -112,6 +116,7 @@ def mnist():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'MNIST: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def outdoor():
@@ -123,9 +128,9 @@ def outdoor():
         C2=1,
         C3=10,
         C4=1,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.0001, n_components=500),
+        kernel=RBFSampler(gamma=20, n_components=400),
         forget_score=10,
     )
 
@@ -145,6 +150,7 @@ def outdoor():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Outdoor: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def overlap():
@@ -156,9 +162,9 @@ def overlap():
         C2=2,
         C3=8,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.4, n_components=150),
+        kernel=RBFSampler(gamma=1, n_components=3000),
         forget_score=10,
     )
 
@@ -178,6 +184,7 @@ def overlap():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Overlap: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def hyper():
@@ -189,7 +196,7 @@ def hyper():
         C2=4,
         C3=5,
         C4=4,
-        max_iter=250,
+        max_iter=50,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         forget_score=10,
@@ -212,6 +219,7 @@ def hyper():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'HYPER 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def led():
@@ -222,7 +230,7 @@ def led():
         C2=2,
         C3=8,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         forget_score=10,
@@ -245,6 +253,7 @@ def led():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'LED 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def rbf():
@@ -255,9 +264,9 @@ def rbf():
         C2=2,
         C3=8,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.045, n_components=300),
+        kernel=RBFSampler(gamma=1, n_components=1500),
         forget_score=10,
     )
 
@@ -278,6 +287,7 @@ def rbf():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RBF 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def rtg():
@@ -288,9 +298,9 @@ def rtg():
         C2=2,
         C3=2.5,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.06, n_components=1400),
+        kernel=RBFSampler(gamma=1, n_components=1000),
         forget_score=10,
     )
 
@@ -311,6 +321,7 @@ def rtg():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RTG 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def sea():
@@ -321,7 +332,7 @@ def sea():
         C2=1,
         C3=10,
         C4=1,
-        max_iter=250,
+        max_iter=50,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
         forget_score=10,
@@ -344,6 +355,7 @@ def sea():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'SEA 10K: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def letter():
@@ -354,9 +366,9 @@ def letter():
         C2=2,
         C3=8,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.001, n_components=350),
+        kernel=RBFSampler(gamma=0.03, n_components=500),
         forget_score=10,
     )
 
@@ -385,6 +397,7 @@ def letter():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label.reshape(test_label.shape[0], 1))
     print(f'Letter: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def dna():
@@ -395,7 +408,7 @@ def dna():
         C2=4,
         C3=4,
         C4=4,
-        max_iter=250,
+        max_iter=50,
         phi=0,
         kernel=RBFSampler(gamma=0.01, n_components=1000),
         forget_score=10,
@@ -436,6 +449,7 @@ def dna():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'DNA: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def usps():
@@ -446,15 +460,15 @@ def usps():
         C2=2,
         C3=8,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.0007, n_components=1000),
+        kernel=RBFSampler(gamma=0.01, n_components=1000),
         forget_score=10,
     )
 
     train_data = np.zeros((7291, 256))
     train_label = np.zeros((7291,))
-    with open(f'{DATA_DIR}/dna.scale.tr', 'r') as f_in:
+    with open(f'{DATA_DIR}/usps', 'r') as f_in:
         for i, line in enumerate(f_in):
             split = line.split(' ')
             train_label[i] = split[0]
@@ -462,11 +476,11 @@ def usps():
                 if s == '\n':
                     continue
                 feats = s.split(':')
-                train_data[i, int(feats[0]) - 1] = int(feats[1])
+                train_data[i, int(feats[0]) - 1] = float(feats[1])
 
     test_data = np.zeros((2007, 256))
     test_label = np.zeros((2007,))
-    with open(f'{DATA_DIR}/dna.scale.t', 'r') as f_in:
+    with open(f'{DATA_DIR}/usps.t', 'r') as f_in:
         for i, line in enumerate(f_in):
             split = line.split(' ')
             test_label[i] = split[0]
@@ -474,7 +488,7 @@ def usps():
                 if s == '\n':
                     continue
                 feats = s.split(':')
-                test_data[i, int(feats[0]) - 1] = int(feats[1])
+                test_data[i, int(feats[0]) - 1] = float(feats[1])
 
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
@@ -487,6 +501,7 @@ def usps():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'USPS: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def isolet():
@@ -497,9 +512,9 @@ def isolet():
         C2=10,
         C3=10,
         C4=10,
-        max_iter=250,
+        max_iter=50,
         phi=0,
-        kernel=RBFSampler(gamma=0.0002, n_components=1000),
+        kernel=RBFSampler(gamma=0.001, n_components=1000),
         forget_score=10,
     )
 
@@ -522,6 +537,7 @@ def isolet():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data, y=test_label)
     print(f'ISOLET: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 def gisette():
@@ -533,7 +549,7 @@ def gisette():
         C2=2,
         C3=8,
         C4=2,
-        max_iter=250,
+        max_iter=50,
         phi=0,
         kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
         forget_score=10,
@@ -555,21 +571,25 @@ def gisette():
     # Prediction
     accuracy = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Gisette: Accuracy: {np.around(accuracy * 100.0, 3)}% Train time: {np.around(elapsed, 3)}s')
+    return accuracy, np.around(elapsed, 3)
 
 
 if __name__ == '__main__':
-    # border()
-    # coil()
-    # overlap()
-    outdoor()
-    # mnist()
-    # hyper()
-    # led()
-    # rbf()
-    # rtg()
-    # sea()
-    # letter()
-    # dna()
-    # usps()
-    # isolet()
-    # gisette()
+
+    with open(f'./logs/benchmarks_{str(datetime.now(tz=timezone.utc))}.log', 'w') as f_out:
+        for dataset in [border, coil, overlap, outdoor, mnist, hyper, led, rbf, rtg, sea,
+                        letter, dna, usps, isolet, gisette]:
+            res = []
+            tmg = []
+            for i in range(10):
+                _res, _time = dataset()
+                res.append(_res)
+                tmg.append(_time)
+            res = np.asarray(res)
+            tmg = np.asarray(tmg)
+            print(f'{dataset.__name__} ACC: mean:{res.mean()} stdev:{res.std()} max:{np.max(res)} min:{np.min(res)}')
+            f_out.write(f'{dataset.__name__} ACC: mean:{res.mean()} stdev:{res.std()} '
+                        f'max:{np.max(res)} min:{np.min(res)}\n')
+            print(f'{dataset.__name__} TIME: mean:{tmg.mean()} stdev:{tmg.std()} max:{np.max(tmg)} min:{np.min(tmg)}')
+            f_out.write(f'{dataset.__name__} TIME: mean:{tmg.mean()} stdev:{tmg.std()} '
+                        f'max:{np.max(tmg)} min:{np.min(tmg)}\n')

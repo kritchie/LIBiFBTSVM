@@ -15,7 +15,6 @@ from libifbtsvm.functions import (
     fuzzy_membership,
     train_model,
 )
-from libifbtsvm.functions.ctrain_model import train_model as ctrain_model
 from libifbtsvm.models.ifbtsvm import (
     ClassificationModel,
     FuzzyMembership,
@@ -147,18 +146,9 @@ class iFBTSVM(BaseEstimator):
         _C4 = parameters.C4
 
         # Train the model using the algorithm described by (de Mello et al. 2019)
-
         # Python
         hyperplane_p: Hyperplane = train_model(parameters=parameters, H=H_n, G=H_p, C=_C4, CCx=_C3)
         hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
-
-        # Cython
-        # _train_p = ctrain_model(parameters.max_iter, parameters.epsilon, H_n, H_p, _C4, _C3)
-        # hyperplane_p = Hyperplane(*_train_p)
-        # _train_n = ctrain_model(parameters.max_iter, parameters.epsilon, H_p, H_n, _C2, _C1)
-        # hyperplane_n = Hyperplane(*_train_n)
-
-        # Common to both Cython and Python
         hyperplane_n.weights = -hyperplane_n.weights
 
         return ClassificationModel(class_p=y_p[0],
@@ -363,10 +353,6 @@ class iFBTSVM(BaseEstimator):
         i = 0
         while i < len(X):
 
-            # TODO : Remove me
-            import time
-            before = time.monotonic()
-
             batch_x = X[i: i + batch_size]
             batch_y = y[i: i + batch_size]
 
@@ -390,10 +376,6 @@ class iFBTSVM(BaseEstimator):
                 self._classifiers[hypp.class_p] = _clsf
 
             i += batch_size
-
-            # TODO Remove me
-            after = time.monotonic()
-            print(f'Batch {i} of {len(X)} done... elapsed: {(after-before)}s')
 
     def predict(self, X):
         """

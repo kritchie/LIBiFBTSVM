@@ -52,7 +52,7 @@ def test_decrement():
     fuzzy = np.zeros((3, 1))
     data = np.zeros((3, 1))
 
-    score, alphas, fuzzy, data = iFBTSVM._decrement([0], score, c, alphas, fuzzy, data)
+    score, alphas, fuzzy, data = iFBTSVM._decrement([0], score, alphas, fuzzy, data)
 
     assert np.array_equal(score, np.asarray([[1, 2], [1, 1]]))
     assert np.array_equal(alphas, np.zeros((2, 1)))
