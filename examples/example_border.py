@@ -43,7 +43,8 @@ def border():
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'Border\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 100
@@ -57,7 +58,8 @@ def border():
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Border\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
 
 
 if __name__ == '__main__':

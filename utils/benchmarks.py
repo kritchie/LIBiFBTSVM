@@ -424,7 +424,7 @@ def dna():
                 if s == '\n':
                     continue
                 feats = s.split(':')
-                train_data[i, int(feats[0])-1] = int(feats[1])
+                train_data[i, int(feats[0]) - 1] = int(feats[1])
 
     test_data = np.zeros((1186, 180))
     test_label = np.zeros((1186,))
@@ -436,7 +436,7 @@ def dna():
                 if s == '\n':
                     continue
                 feats = s.split(':')
-                test_data[i, int(feats[0])-1] = int(feats[1])
+                test_data[i, int(feats[0]) - 1] = int(feats[1])
 
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 

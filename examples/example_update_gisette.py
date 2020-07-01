@@ -22,7 +22,7 @@ def gisette():
         C4=2,
         max_iter=500,
         phi=0,
-        kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
+        kernel=None,
         forget_score=10,
     )
 
@@ -43,7 +43,8 @@ def gisette():
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'Gisette\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 500
@@ -57,7 +58,8 @@ def gisette():
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Gisette\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
 
 
 if __name__ == '__main__':

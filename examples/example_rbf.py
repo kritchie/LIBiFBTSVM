@@ -54,8 +54,10 @@ def rbf():
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RBF\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
 
 
 if __name__ == '__main__':

@@ -50,7 +50,8 @@ def border(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'Border\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data.values) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -64,7 +65,8 @@ def border(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Border\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -106,7 +108,8 @@ def coil(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'Coil\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 90  # 5% of original dataset
@@ -120,7 +123,8 @@ def coil(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Coil\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -155,7 +159,8 @@ def mnist(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'MNIST\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data.values) / 100 * 5 + 0.5)  # 10% of original dataset
@@ -169,7 +174,8 @@ def mnist(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'MNIST\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -193,12 +199,6 @@ def outdoor(forget_score):
     test_data = pd.read_csv(f'{DATA_DIR}/Outdoor_test_data.csv')
     test_label = pd.read_csv(f'{DATA_DIR}/Outdoor_test_label.csv')
 
-    # indices = np.arange(train_data.values.shape[0])
-    # np.random.shuffle(indices)
-    #
-    # train_data = train_data.values[indices]
-    # train_label = train_label.values[indices]
-
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
@@ -211,10 +211,11 @@ def outdoor(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'Outdoor\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
-    batch_size = 500  # 5% of original dataset
+    batch_size = 500
     before = time.monotonic()
     ifbtsvm.update(X=train_data[num_points:].values,
                    y=train_label[num_points:].values.reshape(train_label[num_points:].values.shape[0]),
@@ -225,7 +226,8 @@ def outdoor(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Outdoor\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time):'
+          f' {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -261,7 +263,8 @@ def overlap(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'Overlap\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time):'
+          f' {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data.values) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -275,7 +278,8 @@ def overlap(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Overlap\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -290,7 +294,7 @@ def hyper(forget_score):
         C4=4,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -312,7 +316,8 @@ def hyper(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'Hyper\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -326,7 +331,8 @@ def hyper(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Hyper\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -341,7 +347,7 @@ def hyper100K(forget_score):
         C4=4,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -363,7 +369,8 @@ def hyper100K(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'Hyper100k\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 5000
@@ -377,7 +384,8 @@ def hyper100K(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Hyper100k\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -392,7 +400,7 @@ def hyper1M(forget_score):
         C4=4,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -414,10 +422,11 @@ def hyper1M(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'Hyper1M\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
-    batch_size = 100000
+    batch_size = 50000
     before = time.monotonic()
     ifbtsvm.update(X=train_data[num_points:],
                    y=train_label[num_points:].reshape(train_label[num_points:].shape[0]),
@@ -428,7 +437,8 @@ def hyper1M(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Hyper1M\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -442,7 +452,7 @@ def led(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -464,7 +474,8 @@ def led(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'LED\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -478,7 +489,8 @@ def led(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'LED\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -492,7 +504,7 @@ def led100K(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -514,7 +526,8 @@ def led100K(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'LED100K\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 5000
@@ -528,7 +541,8 @@ def led100K(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'LED100K\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -542,7 +556,7 @@ def led1M(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.4, n_components=150),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -567,10 +581,11 @@ def led1M(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'LED1M\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
-    batch_size = 10000  # 5% of original dataset
+    batch_size = 50000
     before = time.monotonic()
     ifbtsvm.update(X=train_data[num_points:],
                    y=train_label[num_points:].reshape(train_label[num_points:].shape[0]),
@@ -581,7 +596,8 @@ def led1M(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'LED1M\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -617,7 +633,8 @@ def rbf(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'RBF\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -631,7 +648,8 @@ def rbf(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RBF\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -667,7 +685,8 @@ def rbf100K(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'RBF100K\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 5000
@@ -681,7 +700,8 @@ def rbf100K(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RBF100K\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -708,7 +728,7 @@ def rbf1M(forget_score):
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
-    num_points = 5000
+    num_points = 50000
     before = time.monotonic()
     ifbtsvm.fit(X=train_data[:num_points],
                 y=train_label[:num_points].reshape(train_label[:num_points].shape[0]))
@@ -717,10 +737,11 @@ def rbf1M(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'RBF1M\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
-    batch_size = 1000
+    batch_size = 50000
     before = time.monotonic()
     ifbtsvm.update(X=train_data[num_points:],
                    y=train_label[num_points:].reshape(train_label[num_points:].shape[0]),
@@ -731,7 +752,8 @@ def rbf1M(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RBF1M\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -767,7 +789,8 @@ def rtg(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'RTG\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -781,7 +804,8 @@ def rtg(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RTG\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time):'
+          f' {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -817,7 +841,8 @@ def rtg100K(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'RTG100K\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 5000
@@ -831,7 +856,8 @@ def rtg100K(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RTG100K\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -867,10 +893,11 @@ def rtg1M(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'RTG1M\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
-    batch_size = 10000
+    batch_size = 50000
     before = time.monotonic()
     ifbtsvm.update(X=train_data[num_points:],
                    y=train_label[num_points:].reshape(train_label[num_points:].shape[0]),
@@ -881,7 +908,8 @@ def rtg1M(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'RTG1M\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -895,7 +923,7 @@ def sea(forget_score):
         C4=1,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -917,7 +945,8 @@ def sea(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'SEA\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -931,7 +960,8 @@ def sea(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'SEA\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -945,7 +975,7 @@ def sea100K(forget_score):
         C4=1,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -967,7 +997,8 @@ def sea100K(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'SEA100K\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 5000
@@ -981,7 +1012,8 @@ def sea100K(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'SEA100K\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -995,7 +1027,7 @@ def sea1M(forget_score):
         C4=1,
         max_iter=50,
         phi=0.00001,
-        kernel=None,  # RBFSampler(gamma=0.6, n_components=1400),
+        kernel=None,
         forget_score=forget_score,
     )
 
@@ -1017,7 +1049,8 @@ def sea1M(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'SEA1M\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 10000
@@ -1031,7 +1064,8 @@ def sea1M(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'SEA1M\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -1075,7 +1109,8 @@ def letter(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'Letter\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -1089,7 +1124,8 @@ def letter(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Letter\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -1117,7 +1153,7 @@ def dna(forget_score):
                 if s == '\n':
                     continue
                 feats = s.split(':')
-                train_data[i, int(feats[0])-1] = int(feats[1])
+                train_data[i, int(feats[0]) - 1] = int(feats[1])
 
     test_data = np.zeros((1186, 180))
     test_label = np.zeros((1186,))
@@ -1129,7 +1165,7 @@ def dna(forget_score):
                 if s == '\n':
                     continue
                 feats = s.split(':')
-                test_data[i, int(feats[0])-1] = int(feats[1])
+                test_data[i, int(feats[0]) - 1] = int(feats[1])
 
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
@@ -1142,9 +1178,9 @@ def dna(forget_score):
     elapsed = (after - before)
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
-
     print(f'DNA\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -1158,7 +1194,8 @@ def dna(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'DNA\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -1217,7 +1254,8 @@ def usps(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'USPS\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -1231,7 +1269,8 @@ def usps(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'USPS\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -1269,7 +1308,8 @@ def isolet(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data, y=test_label)
 
     print(f'Isolet\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -1283,7 +1323,8 @@ def isolet(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data, y=test_label)
     print(f'Isolet\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -1319,7 +1360,8 @@ def gisette(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'Gisette\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = int(len(train_data.values) / 100 * 5 + 0.5)  # 5% of original dataset
@@ -1333,8 +1375,10 @@ def gisette(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'Gisette\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -1372,7 +1416,8 @@ def susy(forget_score):
     accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
 
     print(f'SUSY\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
     batch_size = 225000  # 5% of original dataset
@@ -1386,8 +1431,10 @@ def susy(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'SUSY\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
+          f'Training (DataPoints|Accuracy|Time): '
+          f'{num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
+          f'Update (BatchSize|Accuracy|Time): '
+          f'{batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
 
 
@@ -1408,9 +1455,11 @@ if __name__ == '__main__':
                     tmg.append(_time)
                 res = np.asarray(res)
                 tmg = np.asarray(tmg)
-                print(f'{dataset.__name__} ACC: mean:{res.mean()} stdev:{res.std()} max:{np.max(res)} min:{np.min(res)}')
+                print(f'{dataset.__name__} ACC: mean:{res.mean()} stdev:{res.std()} '
+                      f'max:{np.max(res)} min:{np.min(res)}')
                 f_out.write(f'{dataset.__name__} ACC: mean:{res.mean()} stdev:{res.std()} '
                             f'max:{np.max(res)} min:{np.min(res)}\n')
-                print(f'{dataset.__name__} TIME: mean:{tmg.mean()} stdev:{tmg.std()} max:{np.max(tmg)} min:{np.min(tmg)}')
+                print(f'{dataset.__name__} TIME: mean:{tmg.mean()} stdev:{tmg.std()} '
+                      f'max:{np.max(tmg)} min:{np.min(tmg)}')
                 f_out.write(f'{dataset.__name__} TIME: mean:{tmg.mean()} stdev:{tmg.std()} '
                             f'max:{np.max(tmg)} min:{np.min(tmg)}\n')
