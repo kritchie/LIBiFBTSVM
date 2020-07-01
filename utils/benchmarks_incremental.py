@@ -402,7 +402,7 @@ def hyper1M(forget_score):
     test_data = _data.values[1000000:, 0:10]
     test_label = _data.values[1000000:, 10:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
     # Training
     num_points = 50000
@@ -595,7 +595,7 @@ def rbf(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=RBFSampler(gamma=1, n_components=1500),
+        kernel=RBFSampler(gamma=1, n_components=500),
         forget_score=forget_score,
     )
 
@@ -645,7 +645,7 @@ def rbf100K(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=RBFSampler(gamma=1, n_components=1000),
+        kernel=RBFSampler(gamma=1, n_components=500),
         forget_score=forget_score,
     )
 
@@ -695,7 +695,7 @@ def rbf1M(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=RBFSampler(gamma=1, n_components=1500),
+        kernel=RBFSampler(gamma=1, n_components=500),
         forget_score=forget_score,
     )
 
@@ -745,7 +745,7 @@ def rtg(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=RBFSampler(gamma=1, n_components=1000),
+        kernel=RBFSampler(gamma=1, n_components=500),
         forget_score=forget_score,
     )
 
@@ -795,7 +795,7 @@ def rtg100K(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=RBFSampler(gamma=1, n_components=1000),
+        kernel=RBFSampler(gamma=1, n_components=500),
         forget_score=forget_score,
     )
 
@@ -845,7 +845,7 @@ def rtg1M(forget_score):
         C4=2,
         max_iter=50,
         phi=0.00001,
-        kernel=RBFSampler(gamma=1, n_components=1000),
+        kernel=RBFSampler(gamma=1, n_components=500),
         forget_score=forget_score,
     )
 
@@ -855,7 +855,7 @@ def rtg1M(forget_score):
     test_data = _data.values[1000000:, 0:10]
     test_label = _data.values[1000000:, 10:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
     # Training
     num_points = 50000
@@ -1005,7 +1005,7 @@ def sea1M(forget_score):
     test_data = _data.values[1000000:, 0:3]
     test_label = _data.values[1000000:, 3:]
 
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
+    ifbtsvm = iFBTSVM(parameters=params, n_jobs=1)
 
     # Training
     num_points = 50000
@@ -1353,7 +1353,7 @@ def susy(forget_score):
         forget_score=forget_score,
     )
 
-    _data = pd.read_csv(f'/media/karl/DataLake/SUSY.csv', delim_whitespace=True)
+    _data = pd.read_csv(f'{DATA_DIR}/SUSY.csv', delim_whitespace=True)
 
     train_data = _data.values[:4500000, 1:]
     train_label = _data.values[:4500000, 0]
@@ -1363,7 +1363,7 @@ def susy(forget_score):
     ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
 
     # Training
-    num_points = 100000
+    num_points = 225000  # 5% of original dataset
     before = time.monotonic()
     ifbtsvm.fit(X=train_data[:num_points].values,
                 y=train_label[:num_points].values.reshape(train_label[:num_points].values.shape[0]))
@@ -1375,7 +1375,7 @@ def susy(forget_score):
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
 
     # Update
-    batch_size = 100000
+    batch_size = 225000  # 5% of original dataset
     before = time.monotonic()
     ifbtsvm.update(X=train_data[num_points:].values,
                    y=train_label[num_points:].values.reshape(train_label[num_points:].values.shape[0]),
@@ -1386,59 +1386,6 @@ def susy(forget_score):
     # Prediction
     accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
     print(f'SUSY\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
-          f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
-    return accuracy_2, (elapsed + u_elapsed)
-
-
-def wesad(forget_score):
-    params = Hyperparameters(
-        epsilon=1e-10,
-        fuzzy=0.1,
-        C1=10,
-        C2=2,
-        C3=10,
-        C4=2,
-        max_iter=50,
-        phi=0.00001,
-        kernel=None, #RBFSampler(gamma=0.2, n_components=300),
-        forget_score=forget_score,
-    )
-
-    # TODO load WESAD data
-    _data = pd.read_csv(f'/media/karl/DataLake/', delim_whitespace=True)
-
-    train_data = _data.values[:4500000, 1:]
-    train_label = _data.values[:4500000, 0]
-    test_data = _data.values[4500000:, 1:]
-    test_label = _data.values[4500000:, 0]
-
-    ifbtsvm = iFBTSVM(parameters=params, n_jobs=4)
-
-    # Training
-    num_points = 1537900
-    before = time.monotonic()
-    ifbtsvm.fit(X=train_data[:num_points].values,
-                y=train_label[:num_points].values.reshape(train_label[:num_points].values.shape[0]))
-    after = time.monotonic()
-    elapsed = (after - before)
-    accuracy_1 = ifbtsvm.score(X=test_data.values, y=test_label.values)
-
-    print(f'WESAD\t'
-          f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t')
-
-    # Update
-    batch_size = 1537900
-    before = time.monotonic()
-    ifbtsvm.update(X=train_data[num_points:].values,
-                   y=train_label[num_points:].values.reshape(train_label[num_points:].values.shape[0]),
-                   batch_size=batch_size)
-    after = time.monotonic()
-    u_elapsed = after - before
-
-    # Prediction
-    accuracy_2 = ifbtsvm.score(X=test_data.values, y=test_label.values)
-    print(f'WESAD\t'
           f'Training (DataPoints|Accuracy|Time): {num_points}|{np.around(accuracy_1 * 100.0, 3)}%|{np.around(elapsed, 3)}s\t'
           f'Update (BatchSize|Accuracy|Time): {batch_size}|{np.around(accuracy_2 * 100.0, 3)}%|{np.around(u_elapsed, 3)}s')
     return accuracy_2, (elapsed + u_elapsed)
@@ -1450,7 +1397,9 @@ if __name__ == '__main__':
     for forget_score in [1, 2, 4, 10]:
         print(f"Forget score {forget_score}")
         with open(f'./logs/benchmarks_{forget_score}_inc_{str(datetime.now(tz=timezone.utc))}.log', 'w') as f_out:
-            for dataset in [led100K, led1M, hyper100K, hyper1M, rtg100K, rtg1M, rbf100K, rbf1M, sea100K, sea1M]:
+            for dataset in [border, coil, overlap, outdoor, mnist, hyper, hyper100K, hyper1M, led, led100K, led1M,
+                            rbf, rbf100K, rtg, rtg100K, rtg1M, sea, sea100K, sea1M, letter, dna, usps, isolet,
+                            gisette, susy]:
                 res = []
                 tmg = []
                 for i in range(10):
