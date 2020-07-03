@@ -1,5 +1,5 @@
 
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 
@@ -30,7 +30,7 @@ class FuzzyMembership(object):
 class Hyperparameters(object):
 
     def __init__(self, epsilon=None, fuzzy=None, C1=None, C2=None, C3=None, C4=None,
-                 max_evals=None, phi=None, kernel=None, repetition=None):
+                 max_iter=None, phi=None, kernel=None, forget_score=None):
         """
         Creates an object representing the hyperparameters of a classification model
 
@@ -41,9 +41,9 @@ class Hyperparameters(object):
         :param C2:
         :param C3:
         :param C4:
-        :param max_evals:
+        :param max_iter:
         :param phi:
-        :param repition:
+        :param forget_score:
         """
         self.epsilon: float = epsilon
         self.fuzzy_parameter: float = fuzzy
@@ -51,10 +51,10 @@ class Hyperparameters(object):
         self.C2: float = C2
         self.C3: float = C3
         self.C4: float = C4
-        self.max_evaluations: int = max_evals
+        self.max_iter: int = max_iter
         self.phi: float = phi
         self.kernel: Kernel = kernel
-        self.repetition = repetition
+        self.forget_score = forget_score
 
 
 class Hyperplane(object):
@@ -78,7 +78,8 @@ class Hyperplane(object):
 class ClassificationModel(object):
 
     def __init__(self, fuzzy: FuzzyMembership, weights_p: Hyperplane, weights_n: Hyperplane,
-                 class_p: Label, class_n: Label, data_p: np.ndarray, data_n: np.ndarray):
+                 class_p: Label, class_n: Label, data_p: np.ndarray, data_n: np.ndarray,
+                 score_p: Optional[np.ndarray] = None, score_n: Optional[np.ndarray] = None):
         """
         Creates an object representing a classification model
 
@@ -98,3 +99,5 @@ class ClassificationModel(object):
         self.class_n: Label = class_n
         self.data_p: np.ndarray = data_p
         self.data_n: np.ndarray = data_n
+        self.score_p: Optional[np.ndarray] = score_p
+        self.score_n: Optional[np.ndarray] = score_n

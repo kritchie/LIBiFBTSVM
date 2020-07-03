@@ -8,7 +8,8 @@ from joblib import (  # type: ignore
     Parallel,
 )
 from numpy import linalg
-from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+from sklearn.base import BaseEstimator
 
 from libifbtsvm.functions import (
     fuzzy_membership,
@@ -25,10 +26,10 @@ TrainingSet = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 DAGSubSet = Union[TrainingSet, Generator[TrainingSet, None, None]]
 
 
-class iFBTSVM(SVC):
+class iFBTSVM(BaseEstimator):
 
-    def __init__(self, parameters: Hyperparameters, *args, n_jobs=1, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parameters: Hyperparameters, n_jobs=1):
+        super().__init__()
         self.parameters = parameters
         self._classifiers: Dict = {}
         self.n_jobs = n_jobs
@@ -50,33 +51,32 @@ class iFBTSVM(SVC):
         else:
             res, indices_score, indices_c = np.intersect1d(score[0], np.asarray(c), return_indices=True)
             score[1][indices_score] += 1
-            diff = np.setdiff1d(score[0], np.asarray(c))
+            diff = np.setdiff1d(np.asarray(c), score[0])
 
             if diff.any():
                 _zdiff = np.ones(len(diff))
-                new_score = np.unique(np.array((diff, _zdiff)))
+                new_score = np.array((diff, _zdiff))
 
-                np.append(score[0], [new_score])
-                np.append(score[1], [_zdiff])
+                score_0 = np.append(score[0], [new_score[0]])
+                score_1 = np.append(score[1], [new_score[1]])
+                score = np.asarray([score_0, score_1])
 
         return score
 
     @staticmethod
-    def _decrement(candidates, score, c, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def _decrement(candidates, score, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
 
         :return:
         """
-        # TODO : Optimize this by removing the "delete" and using
-        #      : a keep approach instead
-        sco0 = np.delete(score[0], candidates, axis=0)
-        sco1 = np.delete(score[1], candidates, axis=0)
+        sco0 = np.delete(score[0], candidates)
+        sco1 = np.delete(score[1], candidates)
 
         score = np.asarray([sco0, sco1])
 
-        alphas = np.delete(alphas, c, axis=0)
-        fuzzy = np.delete(fuzzy, c, axis=0)
-        data = np.delete(data, c, axis=0)
+        alphas = np.delete(alphas, candidates)
+        fuzzy = np.delete(fuzzy, candidates)
+        data = np.delete(data, candidates, axis=0)
 
         return score, alphas, fuzzy, data
 
@@ -84,7 +84,7 @@ class iFBTSVM(SVC):
     def _filter_gradients(weights: np.ndarray, gradients: np.ndarray, data:
                           np.ndarray, label: np.ndarray) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
         """
-        Filters a data set based on its projected gradients.
+        Filters data points based on the projected gradients.
 
         Kept data will include only values for which the projected gradients that will expand the support
         vectors, meaning that are outside boundaries of current support vectors of the classifier.
@@ -96,15 +96,15 @@ class iFBTSVM(SVC):
         _data = np.append(data, np.ones((len(data), 1)), axis=1)
         _new_grads = np.matmul(-_data, weights) - 1
 
-        keep = np.where(np.logical_and(_new_grads >= min(gradients), _new_grads <= max(gradients)))
+        _del = np.argwhere(np.logical_or(_new_grads <= min(gradients), _new_grads >= max(gradients)))
 
-        index = keep[0]
+        index = np.reshape(_del, newshape=_del.shape[0],)
 
         if not len(index):
-            return None, None
+            return data, label
 
-        _data = data[index]
-        _label = label[index]
+        _data = np.delete(data, index, axis=0)
+        _label = np.delete(label, index)
 
         return _data, _label
 
@@ -146,6 +146,7 @@ class iFBTSVM(SVC):
         _C4 = parameters.C4
 
         # Train the model using the algorithm described by (de Mello et al. 2019)
+        # Python
         hyperplane_p: Hyperplane = train_model(parameters=parameters, H=H_n, G=H_p, C=_C4, CCx=_C3)
         hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
         hyperplane_n.weights = -hyperplane_n.weights
@@ -159,7 +160,7 @@ class iFBTSVM(SVC):
                                    data_n=x_n)
 
     @classmethod
-    def _increment_dag_step(cls, subset: TrainingSet, batch_size: int, parameters: Hyperparameters,
+    def _increment_dag_step(cls, subset: TrainingSet, parameters: Hyperparameters,
                             classifier: ClassificationModel) -> ClassificationModel:
         """
         Increment already trained DAG models
@@ -177,93 +178,97 @@ class iFBTSVM(SVC):
         x_n = subset[2]
         y_n = subset[3]
 
-        score_p = None
-        score_n = None
-        i = 0
-        while i < len(x_p):
+        _batch_xp, _batch_yp = cls._filter_gradients(weights=classifier.p.weights,
+                                                     gradients=classifier.p.projected_gradients,
+                                                     data=x_p, label=y_p)
 
-            _batch_xp, _batch_yp = cls._filter_gradients(weights=classifier.p.weights,
+        if _batch_xp is None:
+            return classifier
+
+        _batch_xn, _batch_yn = None, None
+        if x_n.any() and y_n.any():
+            _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.p.weights,
                                                          gradients=classifier.p.projected_gradients,
-                                                         data=x_p[i:i + batch_size], label=y_p[i:i + batch_size])
+                                                         data=x_n, label=y_n)
 
-            _batch_xn, _batch_yn = None, None
-            if x_n.any() and y_n.any():
-                _batch_xn, _batch_yn = cls._filter_gradients(weights=classifier.n.weights,
-                                                             gradients=classifier.n.projected_gradients,
-                                                             data=x_n[i:i + batch_size], label=y_n[i:i + batch_size])
+        _data_xp = classifier.data_p
+        if _batch_xp is not None and _batch_xp.any():
+            _data_xp = np.concatenate((_data_xp, _batch_xp)) if _batch_xp is not None else classifier.data_p
 
-            i += batch_size
+        _data_xn = classifier.data_n
+        if _batch_xn is not None and _batch_xn.any():
+            _data_xn = np.concatenate((_data_xn, _batch_xn)) if _batch_xn is not None else classifier.data_n
 
-            _data_xp = classifier.data_p
-            if _batch_xp is not None and _batch_xp.any():
-                _data_xp = np.concatenate((_data_xp, _batch_xp)) if _batch_xp is not None else classifier.data_p
+        # Calculate fuzzy membership for points
+        membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=_data_xp, class_n=_data_xn)
 
-            _data_xn = classifier.data_n
-            if _batch_xn is not None and _batch_xn.any():
-                _data_xn = np.concatenate((_data_xn, _batch_xn)) if _batch_xn is not None else classifier.data_n
+        # Build H matrix which is [X_p/n, e] where "e" is an extra column of ones ("1") appended at the end of the
+        # matrix
+        # i.e.
+        #
+        #   if  X_p = | 1  2  3 |  and   e = | 1 |  then  H_p = | 1 2 3 1 |
+        #             | 4  5  6 |            | 1 |              | 4 5 6 1 |
+        #             | 7  8  9 |            | 1 |              | 7 8 9 1 |
+        #
+        H_p = np.append(_data_xp, np.ones((_data_xp.shape[0], 1)), axis=1)
+        H_n = np.append(_data_xn, np.ones((_data_xn.shape[0], 1)), axis=1)
 
-            # Calculate fuzzy membership for points
-            membership: FuzzyMembership = fuzzy_membership(params=parameters, class_p=_data_xp, class_n=_data_xn)
+        _C1 = parameters.C1 * membership.sn
+        _C3 = parameters.C3 * membership.sp
 
-            # Build H matrix which is [X_p/n, e] where "e" is an extra column of ones ("1") appended at the end of the
-            # matrix
-            # i.e.
-            #
-            #   if  X_p = | 1  2  3 |  and   e = | 1 |  then  H_p = | 1 2 3 1 |
-            #             | 4  5  6 |            | 1 |              | 4 5 6 1 |
-            #             | 7  8  9 |            | 1 |              | 7 8 9 1 |
-            #
-            H_p = np.append(_data_xp, np.ones((_data_xp.shape[0], 1)), axis=1)
-            H_n = np.append(_data_xn, np.ones((_data_xn.shape[0], 1)), axis=1)
+        _C2 = parameters.C2
+        _C4 = parameters.C4
 
-            _C1 = parameters.C1 * membership.sn
-            _C3 = parameters.C3 * membership.sp
+        # Recompute the training with the update data
+        hyperplane_p: Hyperplane = train_model(parameters=parameters, H=H_n, G=H_p, C=_C4, CCx=_C3)
+        hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
+        hyperplane_n.weights = -hyperplane_n.weights
 
-            _C2 = parameters.C2
-            _C4 = parameters.C4
+        classifier.p = hyperplane_p
+        classifier.n = hyperplane_n
+        classifier.fuzzy_membership = membership
 
-            # Recompute the training with the update data
-            hyperplane_p: Hyperplane = train_model(parameters=parameters, H=H_n, G=H_p, C=_C4, CCx=_C3)
-            hyperplane_n: Hyperplane = train_model(parameters=parameters, H=H_p, G=H_n, C=_C2, CCx=_C1)
-            hyperplane_n.weights = -hyperplane_n.weights
+        classifier.data_p = _data_xp
+        classifier.data_n = _data_xn
 
-            classifier.p = hyperplane_p
-            classifier.n = hyperplane_n
-            classifier.fuzzy_membership = membership
+        c_pos = np.argwhere(classifier.p.alpha <= parameters.phi)
+        c_pos = np.reshape(c_pos, newshape=(c_pos.shape[0],))
+        c_neg = np.argwhere(classifier.n.alpha <= parameters.phi)
+        c_neg = np.reshape(c_neg, newshape=(c_neg.shape[0],))
 
-            c_pos = np.nonzero(classifier.p.alpha <= parameters.phi)[0]
-            c_neg = np.nonzero(classifier.n.alpha <= parameters.phi)[0]
+        classifier.score_p = cls._compute_score(classifier.score_p, c_pos)
+        classifier.score_n = cls._compute_score(classifier.score_n, c_neg)
 
-            score_p = cls._compute_score(score_p, c_pos)
-            score_n = cls._compute_score(score_n, c_neg)
+        _candidates_p = np.argwhere(classifier.score_p[1] >= parameters.forget_score)
+        _candidates_p = np.reshape(_candidates_p, newshape=(_candidates_p.shape[0], ))
+        _candidates_n = np.argwhere(classifier.score_n[1] >= parameters.forget_score)
+        _candidates_n = np.reshape(_candidates_n, newshape=(_candidates_n.shape[0], ))
 
-            _decr_candidates_p = np.where(score_p[1] >= parameters.repetition)[0]
-            _decr_candidates_n = np.where(score_n[1] >= parameters.repetition)[0]
+        if _candidates_p.any():
 
-            if _decr_candidates_p.any():
+            score, alpha, fuzzy, data = cls._decrement(candidates=_candidates_p,
+                                                       score=classifier.score_p,
+                                                       alphas=classifier.p.alpha,
+                                                       fuzzy=classifier.fuzzy_membership.sp,
+                                                       data=_data_xp)
 
-                score, alpha, fuzzy, data = cls._decrement(candidates=_decr_candidates_p,
-                                                           score=score_p,
-                                                           c=c_pos,
-                                                           alphas=classifier.p.alpha,
-                                                           fuzzy=classifier.fuzzy_membership.sp,
-                                                           data=_data_xp)
+            classifier.p.alpha = alpha
+            classifier.fuzzy_membership.sp = fuzzy
+            classifier.data_p = data
+            classifier.score_p = score
 
-                classifier.p.alpha = alpha
-                classifier.fuzzy_membership.sp = fuzzy
-                classifier.data_p = data
+        if _candidates_n.any():
 
-            if _decr_candidates_n.any():
-                score, alpha, fuzzy, data = cls._decrement(candidates=_decr_candidates_n,
-                                                           score=score_n,
-                                                           c=c_neg,
-                                                           alphas=classifier.n.alpha,
-                                                           fuzzy=classifier.fuzzy_membership.sn,
-                                                           data=_data_xn)
+            score, alpha, fuzzy, data = cls._decrement(candidates=_candidates_n,
+                                                       score=classifier.score_n,
+                                                       alphas=classifier.n.alpha,
+                                                       fuzzy=classifier.fuzzy_membership.sn,
+                                                       data=_data_xn)
 
-                classifier.n.alpha = alpha
-                classifier.fuzzy_membership.sn = fuzzy
-                classifier.data_n = data
+            classifier.n.alpha = alpha
+            classifier.fuzzy_membership.sn = fuzzy
+            classifier.data_n = data
+            classifier.score_n = score
 
         return classifier
 
@@ -297,8 +302,8 @@ class iFBTSVM(SVC):
         for _p in range(classes.size):
 
             for _n in range(_p + 1, classes.size):
-                _index_p = np.where(y == classes[_p])
-                _index_n = np.where(y == classes[_n])
+                _index_p = np.where(y == classes[_p])[0]
+                _index_n = np.where(y == classes[_n])[0]
 
                 yield X[_index_p], y[_index_p], X[_index_n], y[_index_n]
 
@@ -320,6 +325,7 @@ class iFBTSVM(SVC):
 
         :param sample_weight: (Not supported)
         """
+
         X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X  # type: ignore
 
         # Train the DAG models in parallel
@@ -333,15 +339,6 @@ class iFBTSVM(SVC):
             _clsf[hypp.class_n] = hypp
             self._classifiers[hypp.class_p] = _clsf
 
-    def get_params(self, deep=True):
-        """
-        Returns parameters of the classifier.
-
-        :param deep: Not-implemented, as no effect and is kept to comply with sklearn.svm.SVC interface
-        :return: A dictionary of parameters
-        """
-        return self.parameters
-
     def update(self, X: np.ndarray, y: np.ndarray, batch_size: int = None):
         """
         Update an already trained classifier
@@ -353,25 +350,32 @@ class iFBTSVM(SVC):
         if not batch_size:
             batch_size = len(y)
 
-        X = self.kernel.fit_transform(X=X, y=y) if self.kernel else X  # type: ignore
+        i = 0
+        while i < len(X):
 
-        # Update the DAG models in parallel
-        updated_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(
-            delayed(self._increment_dag_step)
-            (
-                subset,
-                batch_size,
-                self.parameters,
-                self._classifiers[subset[1][0]][subset[3][0]]  # Get classifier for ClassP/ClassN of this subset
+            batch_x = X[i: i + batch_size]
+            batch_y = y[i: i + batch_size]
+
+            batch_x = self.kernel.transform(X=batch_x) if self.kernel else batch_x  # type: ignore
+
+            # Update the DAG models in parallel
+            updated_hyperplanes = Parallel(n_jobs=self.n_jobs, prefer='processes')(
+                delayed(self._increment_dag_step)
+                (
+                    subset,
+                    self.parameters,
+                    self._classifiers[subset[1][0]][subset[3][0]]  # Get classifier for ClassP/ClassN of this subset
+                )
+                for subset in self._generate_sub_sets(batch_x, batch_y)
             )
-            for subset in self._generate_sub_sets(X, y)
-        )
 
-        # Create the DAG Model here
-        for hypp in updated_hyperplanes:
-            _clsf = self._classifiers.get(hypp.class_p, {})
-            _clsf[hypp.class_n] = hypp
-            self._classifiers[hypp.class_p] = _clsf
+            # Create the DAG Model here
+            for hypp in updated_hyperplanes:
+                _clsf = self._classifiers.get(hypp.class_p, {})
+                _clsf[hypp.class_n] = hypp
+                self._classifiers[hypp.class_p] = _clsf
+
+            i += batch_size
 
     def predict(self, X):
         """
@@ -394,21 +398,21 @@ class iFBTSVM(SVC):
 
         for row in X:
 
-            _dag_index_lh = 0
-            _dag_index_rh = 0
+            _dag_index_p = 0
+            _dag_index_n = 0
 
             f_pos = 0
             f_neg = 0
 
-            class_1 = None
-            class_2 = None
+            class_p = None
+            class_n = None
 
             while True:
                 try:
-                    class_1 = lh_keys[_dag_index_lh]
-                    class_2 = rh_keys[_dag_index_rh]
+                    class_p = lh_keys[_dag_index_p]
+                    class_n = rh_keys[_dag_index_n]
 
-                    model: ClassificationModel = self._classifiers[class_1][class_2]
+                    model: ClassificationModel = self._classifiers[class_p][class_n]
 
                     f_pos = np.divide(np.matmul(row, model.p.weights[:-1]) + model.p.weights[-1],
                                       linalg.norm(model.p.weights[:-1]))
@@ -416,47 +420,31 @@ class iFBTSVM(SVC):
                                       linalg.norm(model.n.weights[:-1]))
 
                     if abs(f_pos) < abs(f_neg):
-                        _dag_index_lh += 1
-                        _dag_index_rh += 1
+                        _dag_index_p = _dag_index_n + 1
+                        _dag_index_n += 1
 
                     else:
-                        _dag_index_rh += 1
+                        _dag_index_n += 1
 
                 except (StopIteration, IndexError):
 
                     if abs(f_pos) < abs(f_neg):
-                        classes.append(class_2)
+                        classes.append(class_n)
 
                     else:
-                        classes.append(class_1)
+                        classes.append(class_p)
 
                     break
 
         return classes
-
-    def set_params(self, **params):
-        """
-        Sets parameters of the classifier
-
-        :param params: Keyword arguments and their values
-        :return: None
-        """
-        for key, val in params.items():
-            setattr(self.parameters, key, val)
 
     def score(self, X, y, sample_weight=None):
         """
         Returns the accuracy of a classification.
 
         :param X: Array of features to classify
-        :param y: Array of truth values for the features
+        :param y: 1-D Array of truth values for the features
         :param sample_weight: Not supported
         :return: Accuracy score of the classification
         """
-        predictions = self.predict(X=X)
-        accuracy = 0
-        for i in range(len(y)):
-            if predictions[i] == y[i]:
-                accuracy += 1
-
-        return accuracy / len(y)
+        return accuracy_score(y, self.predict(X), sample_weight=sample_weight)
