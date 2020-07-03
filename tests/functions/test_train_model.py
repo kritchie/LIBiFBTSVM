@@ -15,13 +15,13 @@ def test_train_model():
     C = 2
 
     _mock_params = Hyperparameters()
-    _mock_params.max_evaluations = 1
+    _mock_params.max_iter = 1
     _mock_params.epsilon = 0.0001
 
     model = train_model(parameters=_mock_params, H=H_p, G=H_n, C=C, CCx=CCx)
     assert np.array_equal(model.alpha, np.array([1, 1, 1, 1, 1]))
 
-    _truth = [np.array([val]) for val in [-1, -0.8, -0.6, -0.4, -0.2]]
+    _truth = [np.array(val) for val in [-1, -0.8, -0.6, -0.4, -0.2]]
 
     for i in range(5):
-        assert pytest.approx(model.projected_gradients[i][0], _truth[i][0])
+        assert pytest.approx(model.projected_gradients[i], _truth[i])
