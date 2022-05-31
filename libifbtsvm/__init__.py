@@ -1,4 +1,5 @@
 import logging
+import os
 
 from libifbtsvm.libifbtsvm import iFBTSVM, Hyperparameters
 

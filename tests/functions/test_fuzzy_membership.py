@@ -3,6 +3,7 @@ import pytest
 
 import numpy as np
 
+from numpy.testing import assert_allclose
 from sklearn.datasets import load_iris
 
 from libifbtsvm import Hyperparameters
@@ -87,7 +88,7 @@ def test_fuzzy_membership_iris():
                          [0.92815776], [0.98848116], [0.99733116], [0.99105587], [0.99493091], [0.9970333],
                          [0.99903366], [0.61157738], [0.9992254], [0.99909612], [1.], [0.99982867], [0.5],
                          [0.99991744]])
-    np.testing.assert_allclose(membership.sn, _truth)
+    assert_allclose(membership.sn, _truth)
 
     _truth = np.asarray([[0.99992168], [0.9917287], [0.99376558], [0.98430655], [0.99974305], [0.95670035],
                         [0.99387979], [1.], [0.91239646], [0.99587275], [0.98883625], [0.99914972], [0.98704236],
@@ -98,4 +99,4 @@ def test_fuzzy_membership_iris():
                         [0.99910674], [0.93096412], [0.99996815], [0.99976035], [0.5], [0.95871688], [0.99539269],
                         [0.9728796], [0.98887459], [0.99416071], [0.98977514], [0.99446211], [0.99990073]])
 
-    np.testing.assert_allclose(membership.sp, _truth)
+    assert_allclose(membership.sp, _truth)

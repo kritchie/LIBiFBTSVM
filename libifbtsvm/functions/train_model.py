@@ -112,7 +112,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
         if weights_deltas:
             weights_deltas = np.asarray(weights_deltas)
             mean = np.mean(weights_deltas)
-            if abs(mean) <= 1e-6:
+            if np.abs(mean) <= 1e-6:
                 break
 
     hyperplane = Hyperplane(alpha=alphas_new, weights=weights,
