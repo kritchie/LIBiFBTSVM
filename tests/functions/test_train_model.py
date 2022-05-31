@@ -24,4 +24,4 @@ def test_train_model():
     _truth = [np.array(val) for val in [-1, -0.8, -0.6, -0.4, -0.2]]
 
     for i in range(5):
-        assert pytest.approx(model.projected_gradients[i], _truth[i])
+        assert model.projected_gradients[i] == pytest.approx(_truth[i])
