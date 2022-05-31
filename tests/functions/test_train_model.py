@@ -2,6 +2,8 @@
 import numpy as np
 import pytest
 
+from numpy.testing import assert_allclose
+
 from libifbtsvm.functions import train_model
 from libifbtsvm.models.ifbtsvm import Hyperparameters
 
@@ -19,7 +21,7 @@ def test_train_model():
     _mock_params.epsilon = 0.0001
 
     model = train_model(parameters=_mock_params, H=H_p, G=H_n, C=C, CCx=CCx)
-    assert np.array_equal(model.alpha, np.array([1., 1., 1., 1., 1.]))
+    assert_allclose(model.alpha, np.array([1., 1., 1., 1., 1.]))
 
     _truth = [np.array(val) for val in [-1, -0.8, -0.6, -0.4, -0.2]]
 

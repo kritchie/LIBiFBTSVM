@@ -1,7 +1,7 @@
 
-import pytest
-
 import numpy as np
+
+from numpy.testing import assert_allclose
 
 from libifbtsvm import iFBTSVM, Hyperparameters
 
@@ -15,7 +15,7 @@ def test_compute_score_none():
 
     _score = svm._compute_score(score, c)
 
-    assert np.array_equal(_score, np.asarray([[1, 2, 3, 4, 5], [1, 1, 1, 1, 1]]))
+    assert_allclose(_score, np.asarray([[1, 2, 3, 4, 5], [1, 1, 1, 1, 1]]))
 
 
 def test_compute_score():
@@ -27,15 +27,15 @@ def test_compute_score():
 
     _score = svm._compute_score(score, c)
 
-    assert np.array_equal(_score, np.asarray([[1, 2, 3, 4, 5], [2, 2, 2, 2, 2]]))
+    assert_allclose(_score, np.asarray([[1, 2, 3, 4, 5], [2, 2, 2, 2, 2]]))
 
     score = np.asarray([[1, 2, 3, 4, 5], [1, 1, 1, 1, 1]])
     c = np.arange(1, 11)
 
     _score = svm._compute_score(score, c)
 
-    assert np.array_equal(_score, np.asarray([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                              [2, 2, 2, 2, 2, 1, 1, 1, 1, 1]]))
+    assert_allclose(_score, np.asarray([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                        [2, 2, 2, 2, 2, 1, 1, 1, 1, 1]]))
 
 
 def test_decrement():
@@ -47,10 +47,10 @@ def test_decrement():
 
     score, alphas, fuzzy, data = iFBTSVM._decrement([0], score, alphas, fuzzy, data)
 
-    assert np.array_equal(score, np.asarray([[1, 2], [2, 3]]))
-    assert np.array_equal(alphas, np.asarray([1, 2]))
-    assert np.array_equal(fuzzy, np.asarray([1, 2]))
-    assert np.array_equal(data, np.asarray([1, 2]))
+    assert_allclose(score, np.asarray([[1, 2], [2, 3]]))
+    assert_allclose(alphas, np.asarray([1, 2]))
+    assert_allclose(fuzzy, np.asarray([1, 2]))
+    assert_allclose(data, np.asarray([1, 2]))
 
 
 def test_filter_gradients():
@@ -66,5 +66,5 @@ def test_filter_gradients():
 
     filtered = iFBTSVM._filter_gradients(weights=weights, gradients=gradients, data=data, label=label)
 
-    assert np.array_equal(filtered[0], np.asarray([[5.1, 3.4, 1.5, 0.2], [5.3, 3.7, 1.5, 0.2]]))
-    assert np.array_equal(filtered[1], np.asarray([1, 1]))
+    assert_allclose(filtered[0], np.asarray([[5.1, 3.4, 1.5, 0.2], [5.3, 3.7, 1.5, 0.2]]))
+    assert_allclose(filtered[1], np.asarray([1, 1]))
