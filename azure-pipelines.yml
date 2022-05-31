@@ -1,4 +1,7 @@
 
+variables:
+  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]  # TODO Add version bumping
+
 # specific branch build
 trigger:
   branches:
@@ -18,15 +21,15 @@ jobs:
 
     strategy:
       matrix:
-        py36:
+        py38:
           python.version: '3.8'
           tox.env: py38
 
-        py37:
+        py39:
           python.version: '3.9'
           tox.env: py39
 
-        py38:
+        py310:
           python.version: '3.10'
           tox.env: py310
 
@@ -49,4 +52,3 @@ jobs:
 
       - script: $(Python.pythonLocation)/bin/tox -e '$(tox.env)'
         displayName: run tox -e '$(tox.env)'
-
