@@ -17,7 +17,7 @@ The library is currently under active development, therefore, to install the dev
 run the following command:
 
 ```bash
-pip install git+https://github.com/kritchie/LIBiFBTSVM.git@develop
+pip install git+https://github.com/kritchie/LIBiFBTSVM.git
 ```
 
 Or, alternatively, you can clone the project and navigate to its root folder, then run the following command:

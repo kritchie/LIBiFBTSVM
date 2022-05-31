@@ -11,9 +11,7 @@ def test_compute_score_none():
     svm = iFBTSVM(parameters=params)
 
     score = None
-    c = np.zeros((5,))
-    for i in range(5):
-        c[i] = i + 1
+    c = np.arange(1, 6)
 
     _score = svm._compute_score(score, c)
 
@@ -25,18 +23,14 @@ def test_compute_score():
     svm = iFBTSVM(parameters=params)
 
     score = np.asarray([[1, 2, 3, 4, 5], [1, 1, 1, 1, 1]])
-    c = np.zeros((5,))
-    for i in range(5):
-        c[i] = i + 1
+    c = np.arange(1, 6)
 
     _score = svm._compute_score(score, c)
 
     assert np.array_equal(_score, np.asarray([[1, 2, 3, 4, 5], [2, 2, 2, 2, 2]]))
 
     score = np.asarray([[1, 2, 3, 4, 5], [1, 1, 1, 1, 1]])
-    c = np.zeros((10,))
-    for i in range(10):
-        c[i] = i + 1
+    c = np.arange(1, 11)
 
     _score = svm._compute_score(score, c)
 
