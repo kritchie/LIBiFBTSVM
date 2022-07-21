@@ -20,5 +20,5 @@ setup(
         "": ["*.txt", "*.md"],
     },
     install_requires=requirements_from_file(),
-    python_requires='>=3.6',
+    python_requires='>=3.8',
 )
