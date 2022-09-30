@@ -20,7 +20,7 @@ flake8==4.0.1
     # via -r requirements-dev.in
 iniconfig==1.1.1
     # via pytest
-joblib==1.1.0
+joblib==1.2.0
     # via
     #   -c requirements.txt
     #   -r requirements-dev.in
