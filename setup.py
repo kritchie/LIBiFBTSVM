@@ -11,13 +11,13 @@ def requirements_from_file(filename='requirements.txt'):
 
 
 setup(
-    name="LIBiFBTSVM",
+    name='LIBiFBTSVM',
     license='BSD-3',
-    version="0.0.1",
+    version='1.0.1',
     url='https://github.com/kritchie/LIBiFBTSVM',
     packages=find_packages(),
     package_data={
-        "": ["*.txt", "*.md"],
+        '': ['*.txt', '*.md'],
     },
     install_requires=requirements_from_file(),
     python_requires='>=3.8',

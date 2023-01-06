@@ -108,8 +108,10 @@ typing-extensions==4.4.0
     # via mypy
 virtualenv==20.17.1
     # via tox
-wheel==0.37.1
-    # via pip-tools
+wheel==0.38.1
+    # via
+    #   -r requirements-dev.in
+    #   pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
