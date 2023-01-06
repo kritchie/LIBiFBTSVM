@@ -13,7 +13,7 @@ def requirements_from_file(filename='requirements.txt'):
 setup(
     name='LIBiFBTSVM',
     license='BSD-3',
-    version='1.0.1',
+    version='2.0.0',
     url='https://github.com/kritchie/LIBiFBTSVM',
     packages=find_packages(),
     package_data={
