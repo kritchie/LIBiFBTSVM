@@ -65,19 +65,16 @@ class iFBTSVM(BaseEstimator):
 
     @staticmethod
     def _decrement(candidates, score, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """
+        candidates_for_alphas = score[0][candidates].astype(int)
+        alphas = np.delete(alphas, candidates_for_alphas)
+        fuzzy = np.delete(fuzzy, candidates_for_alphas)
+        data = np.delete(data, candidates_for_alphas, axis=0)
 
-        :return:
-        """
         sco0 = np.delete(score[0], candidates)
+        for i in range(len(sco0)):  # update index arrary about alphas, after deletion on alphas
+            sco0[i] = sco0[i] - np.sum(score[0][candidates] <= sco0[i])
         sco1 = np.delete(score[1], candidates)
-
         score = np.asarray([sco0, sco1])
-
-        alphas = np.delete(alphas, candidates)
-        fuzzy = np.delete(fuzzy, candidates)
-        data = np.delete(data, candidates, axis=0)
-
         return score, alphas, fuzzy, data
 
     @staticmethod
