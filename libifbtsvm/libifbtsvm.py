@@ -71,8 +71,7 @@ class iFBTSVM(BaseEstimator):
         data = np.delete(data, candidates_for_alphas, axis=0)
 
         sco0 = np.delete(score[0], candidates)
-        for i in range(len(sco0)):  # update index arrary about alphas, after deletion on alphas
-            sco0[i] = sco0[i] - np.sum(score[0][candidates] <= sco0[i])
+        sco0 = sco0 - np.sum(np.tile(score[0][candidates], [len(sco0), 1]) <= sco0.reshape([-1,1]), axis = 1)
         sco1 = np.delete(score[1], candidates)
         score = np.asarray([sco0, sco1])
         return score, alphas, fuzzy, data
@@ -445,3 +444,4 @@ class iFBTSVM(BaseEstimator):
         :return: Accuracy score of the classification
         """
         return accuracy_score(y, self.predict(X), sample_weight=sample_weight)
+
