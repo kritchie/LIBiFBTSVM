@@ -65,19 +65,15 @@ class iFBTSVM(BaseEstimator):
 
     @staticmethod
     def _decrement(candidates, score, alphas, fuzzy, data) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """
+        candidates_for_alphas = score[0][candidates].astype(int)
+        alphas = np.delete(alphas, candidates_for_alphas)
+        fuzzy = np.delete(fuzzy, candidates_for_alphas)
+        data = np.delete(data, candidates_for_alphas, axis=0)
 
-        :return:
-        """
         sco0 = np.delete(score[0], candidates)
+        sco0 = sco0 - np.sum(np.tile(score[0][candidates], [len(sco0), 1]) <= sco0.reshape([-1,1]), axis = 1)
         sco1 = np.delete(score[1], candidates)
-
         score = np.asarray([sco0, sco1])
-
-        alphas = np.delete(alphas, candidates)
-        fuzzy = np.delete(fuzzy, candidates)
-        data = np.delete(data, candidates, axis=0)
-
         return score, alphas, fuzzy, data
 
     @staticmethod
@@ -448,3 +444,4 @@ class iFBTSVM(BaseEstimator):
         :return: Accuracy score of the classification
         """
         return accuracy_score(y, self.predict(X), sample_weight=sample_weight)
+

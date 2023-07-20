@@ -47,7 +47,7 @@ def test_decrement():
 
     score, alphas, fuzzy, data = iFBTSVM._decrement([0], score, alphas, fuzzy, data)
 
-    assert_allclose(score, np.asarray([[1, 2], [2, 3]]))
+    assert_allclose(score, np.asarray([[0, 1], [2, 3]]))
     assert_allclose(alphas, np.asarray([1, 2]))
     assert_allclose(fuzzy, np.asarray([1, 2]))
     assert_allclose(data, np.asarray([1, 2]))
