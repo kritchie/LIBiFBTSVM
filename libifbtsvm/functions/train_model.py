@@ -1,15 +1,10 @@
 
 import numpy as np
-from numpy.core.umath_tests import inner1d
 
 from libifbtsvm.models.ifbtsvm import (
     Hyperparameters,
     Hyperplane,
 )
-
-
-# TODO : Remove me
-import time
 
 
 def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: float, CCx: np.ndarray) -> Hyperplane:
@@ -20,7 +15,7 @@ def train_model(parameters: Hyperparameters, H: np.ndarray, G: np.ndarray, C: fl
     _Q = np.linalg.solve((np.dot(np.transpose(H), H) + C * identity_matrix), np.transpose(G))
 
     length_g = len(G)
-    Q = inner1d(G, _Q.T)
+    Q = (G * _Q.T).sum(axis=1)
 
     ref_old = np.arange(length_g)
 

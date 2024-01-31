@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import time
 
-from sklearn.kernel_approximation import RBFSampler
 
 from libifbtsvm import iFBTSVM, Hyperparameters
 

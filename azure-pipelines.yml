@@ -1,6 +1,6 @@
 
 variables:
-  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]  # TODO Add version bumping
+  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 # specific branch build
 trigger:
@@ -21,17 +21,17 @@ jobs:
 
     strategy:
       matrix:
-        py38:
-          python.version: '3.8'
-          tox.env: py38
-
-        py39:
-          python.version: '3.9'
-          tox.env: py39
-
         py310:
           python.version: '3.10'
           tox.env: py310
+
+        py311:
+          python.version: '3.11'
+          tox.env: py311
+
+        py312:
+          python.version: '3.12'
+          tox.env: py312
 
     steps:
 
@@ -42,7 +42,7 @@ jobs:
           addToPath: false
         name: Python
 
-      - script: $(Python.pythonLocation)/bin/pip install --upgrade tox
+      - script: $(Python.pythonLocation)/bin/pip install poetry
         displayName: Install Python-based tools.
 
       - task: UsePythonVersion@0
@@ -50,5 +50,5 @@ jobs:
           versionSpec: '$(python.version)'
         displayName: Use Python $(python.version) for tests.
 
-      - script: $(Python.pythonLocation)/bin/tox -e '$(tox.env)'
-        displayName: run tox -e '$(tox.env)'
+      - script: $(Python.pythonLocation)/bin/poetry run pytest .'
+        displayName: tests
