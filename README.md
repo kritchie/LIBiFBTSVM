@@ -22,8 +22,10 @@ pip install git+https://github.com/kritchie/LIBiFBTSVM.git
 
 Or, alternatively, you can clone the project and navigate to its root folder, then run the following command:
 
+(Make sure to have `poetry` installed in your environment)
+
 ```bash
-python setup.py install
+make install
 ```
 
 ### Examples
@@ -34,21 +36,18 @@ The `examples/` directory contains a few examples on how to use this library to 
 
 ### Pre-requisites
 
-This packages uses [pip-tools](https://github.com/jazzband/pip-tools) to manage its dependencies.
-Development dependencies are located within the `requirements-dev.txt` file.
-
-When adding dependencies to either `requirements.in` or `requirements-dev.txt`, make sure to call :
+This packages uses [poetry](https://python-poetry.org/) to manage its dependencies.  You can install like running the following command:
 
 ```
-make compile-reqs
+pip install poetry
 ```
 
 ### Testing
 
-The `tox` package is used to automate testing. The tox config is located in `tox.ini` and to run the testing pipeline, simply run the following :
+To run the testing pipeline, simply run the following :
 
 ```bash
-tox
+make test
 ```
 
 ## References
