@@ -11,15 +11,6 @@ We are happy to help any user of the library. First, please be familiar with Sta
 ## Reporting bugs and opening issues
 
 Github is the platform on which we track bugs and issues.
-When opening a request, please include information :
-
-```
-import platform; print(platform.platform())
-import sys; print("Python", sys.version)
-import numpy; print("NumPy", numpy.__version__)
-import scipy; print("SciPy", scipy.__version__)
-import sklearn; print("Scikit-Learn", sklearn.__version__)
-```
 
 Ideally with a small, reproducible snippet.
 

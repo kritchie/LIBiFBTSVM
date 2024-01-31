@@ -43,10 +43,6 @@ When adding dependencies to either `requirements.in` or `requirements-dev.txt`, 
 make compile-reqs
 ```
 
-### Code structure
-
-TODO
-
 ### Testing
 
 The `tox` package is used to automate testing. The tox config is located in `tox.ini` and to run the testing pipeline, simply run the following :
